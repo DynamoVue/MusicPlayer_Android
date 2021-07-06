@@ -7,7 +7,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.musicapp.Adapter.MainViewPagerAdapter;
 import com.example.musicapp.Fragment.HomeFragment;
-import com.example.musicapp.Fragment.SearchFragment;
+import com.example.musicapp.Fragment.PlaylistFragment;
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,12 +25,11 @@ public class MainActivity extends AppCompatActivity {
     public void init() {
         MainViewPagerAdapter mainViewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager());
         mainViewPagerAdapter.addFragment(new HomeFragment(), "HOME");
-        mainViewPagerAdapter.addFragment(new SearchFragment(), "SEARCH");
+        mainViewPagerAdapter.addFragment(new PlaylistFragment(), "SEARCH");
         viewPager.setAdapter(mainViewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.getTabAt(0).setIcon(R.drawable.icontrangchu);
         tabLayout.getTabAt(1).setIcon(R.drawable.iconsearch);
-
     }
 
     public void createPage() {

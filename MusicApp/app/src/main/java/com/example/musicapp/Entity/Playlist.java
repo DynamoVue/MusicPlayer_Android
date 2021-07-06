@@ -4,17 +4,8 @@ import java.io.Serializable;
 
 public class Playlist implements Serializable {
     private String id;
-    private String namePlaylist;
-    private String imageURLPlaylist;
-
-    public Playlist(String id, String namePlaylist, String imageURLPlaylist) {
-        this.id = id;
-        this.namePlaylist = namePlaylist;
-        this.imageURLPlaylist = imageURLPlaylist;
-    }
-
-    public Playlist() {
-    }
+    private String playlistName;
+    private String playlistUrl;
 
     public String getId() {
         return id;
@@ -24,19 +15,29 @@ public class Playlist implements Serializable {
         this.id = id;
     }
 
-    public String getNamePlaylist() {
-        return namePlaylist;
+    public String getPlaylistName() {
+        return playlistName;
     }
 
-    public void setNamePlaylist(String namePlaylist) {
-        this.namePlaylist = namePlaylist;
+    public void setPlaylistName(String playlistName) {
+        this.playlistName = playlistName;
     }
 
-    public String getImageURLPlaylist() {
-        return imageURLPlaylist;
+    public String getPlaylistUrl() {
+        return playlistUrl;
     }
 
-    public void setImageURLPlaylist(String imageURLPlaylist) {
-        this.imageURLPlaylist = imageURLPlaylist;
+    public void setPlaylistUrl(String playlistUrl) {
+        this.playlistUrl = playlistUrl;
+    }
+
+    public Playlist() {
+
+    }
+
+    public Playlist(String id, String playlistName, String playlistUrl) {
+        this.id = id;
+        this.playlistName = playlistName;
+        this.playlistUrl = playlistUrl;
     }
 }
