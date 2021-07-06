@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicapp.Entity.Playlist;
+import com.example.musicapp.Entity.Song;
 import com.example.musicapp.R;
 import com.squareup.picasso.Picasso;
 
@@ -23,12 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyViewHolder> {
-    public List<Playlist> playlists;
+    public List<Song> songs;
     public Context mContext;
 
 
-    public PlaylistAdapter(List<Playlist> playlists, Context mContext) {
-        this.playlists = playlists;
+    public PlaylistAdapter(List<Song> songs, Context mContext) {
+        this.songs = songs;
         this.mContext = mContext;
     }
 
@@ -41,14 +42,15 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull PlaylistAdapter.MyViewHolder holder, int position) {
-        holder.title.setText(playlists.get(position).getId());
-        holder.desc.setText(playlists.get(position).getPlaylistName());
-        Picasso.get().load(playlists.get(position).getPlaylistUrl()).fit().centerCrop().into(holder.imageThumbnail);
+        holder.title.setText(songs.get(position).getSongName());
+        holder.desc.setText(songs.get(position).getSingers());
+        holder.index.setText(position + 1  + "");
+        Picasso.get().load(songs.get(position).getImageURL()).fit().centerCrop().into(holder.imageThumbnail);
     }
 
     @Override
     public int getItemCount() {
-        return playlists.size();
+        return songs.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

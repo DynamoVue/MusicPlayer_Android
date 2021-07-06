@@ -6,21 +6,29 @@ import java.io.Serializable;
 
 public class Song implements Serializable {
     private String songName;
-    private String singers;
+    private String singer;
     private String imageURL;
     private String mp3URL;
     private String typeSong;
     private String themeSong;
+
+    public String getSinger() {
+        return singer;
+    }
+
     private String lyrics;
     private String content;
 
-
     public String getSingers() {
-        return singers;
+        return singer;
     }
 
-    public void setSingers(String singers) {
-        this.singers = singers;
+    public String setSigners() {
+        return singer;
+    }
+
+    public void setSinger(String singer) {
+        this.singer = singer;
     }
 
     public String getSongName() {

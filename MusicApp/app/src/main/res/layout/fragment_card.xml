@@ -15,14 +15,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1"
-                android:textSize="25sp"
-                android:textStyle="bold"
+                android:textSize="20sp"
                 android:includeFontPadding="false"
+                android:layout_centerVertical="true"
                 />
 
            <androidx.cardview.widget.CardView
-               android:layout_width="50dp"
-               android:layout_height="50dp"
+               android:layout_width="55dp"
+               android:layout_height="55dp"
                android:layout_marginLeft="10dp"
                android:layout_toRightOf="@+id/cardItemIndex"
                app:cardCornerRadius="5dp"
@@ -67,9 +67,9 @@
                 />
             <ImageView
                 android:id="@+id/cardItemMore"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_iconellipsis"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@drawable/ic_more"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 />
