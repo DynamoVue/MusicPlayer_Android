@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/bottomSheetContainer"
+    android:id="@+id/bottomSheetSharingContainer"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:background="@drawable/bottom_sheet_background"
@@ -27,7 +27,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp">
             <ImageView
-                android:id="@+id/songThumbnail"
+                android:id="@+id/nestedSongThumbnail"
                 android:scaleType="centerCrop"
                 android:src="@drawable/iconcard"
                 android:layout_width="match_parent"
@@ -40,7 +40,7 @@
             android:gravity="center_vertical"
             android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/songTitle"
+                android:id="@+id/nestedSongTitle"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="normal"
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true" />
             <TextView
-                android:id="@+id/songSingers"
+                android:id="@+id/nestedSongSingers"
                 android:layout_marginTop="3dp"
                 android:textColor="@color/lightBlack"
                 android:textSize="14sp"
@@ -61,13 +61,8 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_marginTop="20dp"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
         <LinearLayout
-            android:id="@+id/addFavor"
+            android:id="@+id/facebook"
             android:orientation="horizontal"
             android:padding="10dp"
             android:layout_height="wrap_content"
@@ -77,61 +72,60 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/ic_baseline_favorite_border_24"
+                android:src="@drawable/ic_icons8_facebook"
                 />
             <TextView
                 android:textSize="15sp"
                 android:textColor="@color/black"
-                android:text="Add to favorites"
+                android:text="Share on Facebook"
                 android:layout_marginLeft="15dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true" />
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/share"
+            android:id="@+id/facebookStory"
             android:orientation="horizontal"
             android:padding="10dp"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:gravity="center_vertical"
-            >
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_baseline_share_24"
-                />
+        >
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_script"
+            />
             <TextView
-                android:textSize="15sp"
-                android:textColor="@color/black"
-                android:text="Share"
-                android:layout_marginLeft="15dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true" />
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:text="Share on User Story"
+            android:layout_marginLeft="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true" />
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/download"
+            android:id="@+id/copy"
             android:orientation="horizontal"
             android:padding="10dp"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:gravity="center_vertical"
-            >
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_baseline_cloud_download_24"
-                />
-            <TextView
-                android:textSize="15sp"
-                android:textColor="@color/black"
-                android:text="Download"
-                android:layout_marginLeft="15dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true" />
-        </LinearLayout>
+        >
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_baseline_content_copy_24"
+            />
+        <TextView
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:text="Copy"
+            android:layout_marginLeft="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true" />
     </LinearLayout>
-
+    </LinearLayout>
 </LinearLayout>
