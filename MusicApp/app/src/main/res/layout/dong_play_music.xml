@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+    >
+        <TextView
+            android:id="@+id/tvPlayMusicIndex"
+            android:layout_margin="10dp"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:text="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:id="@+id/tvPlayMusicSongName"
+            android:text="Song name"
+            android:maxWidth="250dp"
+            android:ellipsize="end"
+            android:textSize="17sp"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            android:singleLine="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:id="@+id/tvPlayMusicArtist"
+            android:text="Artist name"
+            android:maxWidth="250dp"
+            android:ellipsize="end"
+            android:textSize="12sp"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            android:singleLine="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </RelativeLayout>
+
+
+</RelativeLayout>
