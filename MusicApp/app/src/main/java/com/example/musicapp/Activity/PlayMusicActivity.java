@@ -30,6 +30,7 @@ import com.example.musicapp.R;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class PlayMusicActivity extends AppCompatActivity {
 
@@ -43,6 +44,8 @@ public class PlayMusicActivity extends AppCompatActivity {
     PlayASongFragment playASong;
     PlayAlbumFragment playAlbum;
     MediaPlayer mediaPlayer;
+    int position = 0;
+    boolean isRepeated = false, isRandom = false, next = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +83,144 @@ public class PlayMusicActivity extends AppCompatActivity {
                 }
             }
         });
+        //Event for button repeat
+        imgRepeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isRepeated == false){
+                    if(isRandom == true){
+                        isRandom = false;
+                        imgRandom.setImageResource(R.drawable.iconsuffle);
+                    }
+                    imgRepeat.setImageResource(R.drawable.iconsyned);
+                    isRepeated = true;
+                }else{
+                    imgRepeat.setImageResource(R.drawable.iconrepeat);
+                    isRepeated = false;
+                }
+            }
+        });
+        //Event for button random
+        imgRandom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isRandom == false){
+                    if(isRepeated == true){
+                        isRepeated = false;
+                        imgRepeat.setImageResource(R.drawable.iconrepeat);
+                    }
+                    imgRandom.setImageResource(R.drawable.iconshuffled);
+                    isRandom = true;
+                }else{
+                    imgRandom.setImageResource(R.drawable.iconsuffle);
+                    isRandom = false;
+                }
+            }
+        });
+        //Event for sk bar (play through bar)
+        skSongPlayThrough.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mediaPlayer.seekTo(seekBar.getProgress());
+            }
+        });
+        //Event for next
+        imgNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(songs.size() > 0){
+                    if(mediaPlayer.isPlaying() || mediaPlayer != null){
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                        mediaPlayer = null;
+                    }
+                    if(position < songs.size()){
+                        imgPlay.setImageResource(R.drawable.iconpause);
+                        position ++;
+                        if(isRepeated){
+                            if(position == 0){
+                                position = songs.size();
+                            }
+                            position -= 1;
+                        }
+                        if(isRandom){
+                            Random random = new Random();
+                            int index = random.nextInt(songs.size());
+                            if(index == position){
+                                index ++;
+                            }
+                            position = index;
+                        }
+                        if(position > songs.size() - 1){
+                            position = 0;
+                        }
+                        playDaSong(position);
+                    }
+                }
+                imgNext.setClickable(false);
+                imgPrev.setClickable(false);
+                Handler temp = new Handler();
+                temp.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        imgPrev.setClickable(true);
+                        imgNext.setClickable(true);
+                    }
+                }, 5000);
+            }
+        });
+        //Event for prev
+        imgPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(songs.size() > 0){
+                    if(mediaPlayer.isPlaying() || mediaPlayer != null){
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                        mediaPlayer = null;
+                    }
+                    if(position < songs.size()){
+                        imgPlay.setImageResource(R.drawable.iconpause);
+                        position --;
+                        if(position < 0){
+                            position = songs.size() - 1;
+                        }
+                        if(isRepeated){
+                            position += 1;
+                        }
+                        if(isRandom){
+                            Random random = new Random();
+                            int index = random.nextInt(songs.size());
+                            if(index == position){
+                                index ++;
+                            }
+                            position = index;
+                        }
+                        playDaSong(position);
+                    }
+                }
+                imgNext.setClickable(false);
+                imgPrev.setClickable(false);
+                Handler temp = new Handler();
+                temp.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        imgPrev.setClickable(true);
+                        imgNext.setClickable(true);
+                    }
+                }, 5000);
+            }
+        });
     }
 
     private void getDataFromIntent() {
@@ -115,6 +256,8 @@ public class PlayMusicActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+                mediaPlayer.stop();
+                songs.clear();
             }
         });
         playMToolBar.setTitleTextColor(Color.WHITE);
@@ -125,13 +268,18 @@ public class PlayMusicActivity extends AppCompatActivity {
         viewPagerPlayM.setAdapter(adapterMusic);
 
         //Play immediately after clicking
+        playASong = (PlayASongFragment) adapterMusic.getItem(1);
+        playDaSong(0);
+    }
+
+    public void playDaSong(int position){
         if(songs.size() > 0){
-            playASong = (PlayASongFragment) adapterMusic.getItem(1);
-            getSupportActionBar().setTitle(songs.get(0).getSongName());
-            new PlayMp3().execute(songs.get(0).getMp3URL());
+            Song daSong = songs.get(position);
+            playASong.setCircleImageView(daSong.getImageURL());
+            getSupportActionBar().setTitle(daSong.getSongName());
+            new PlayMp3().execute(daSong.getMp3URL());
             imgPlay.setImageResource(R.drawable.iconpause);
         }
-
     }
 
     class PlayMp3 extends AsyncTask<String, Void, String> {
