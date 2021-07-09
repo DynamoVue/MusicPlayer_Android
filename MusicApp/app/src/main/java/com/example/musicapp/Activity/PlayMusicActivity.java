@@ -1,6 +1,7 @@
 package com.example.musicapp.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
@@ -14,7 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.example.musicapp.Adapter.ViewPagerPlaylistAdapter;
 import com.example.musicapp.Entity.Song;
+import com.example.musicapp.Fragment.PlayASongFragment;
+import com.example.musicapp.Fragment.PlayAlbumFragment;
 import com.example.musicapp.R;
 
 import java.util.ArrayList;
@@ -27,6 +31,9 @@ public class PlayMusicActivity extends AppCompatActivity {
     ImageButton imgPlay, imgNext, imgPrev, imgRandom, imgRepeat;
     ViewPager viewPagerPlayM;
     public static ArrayList<Song> songs = new ArrayList<>();
+    public static  ViewPagerPlaylistAdapter adapterMusic;
+    PlayASongFragment playASong;
+    PlayAlbumFragment playAlbum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +78,11 @@ public class PlayMusicActivity extends AppCompatActivity {
             }
         });
         playMToolBar.setTitleTextColor(Color.WHITE);
+
+        adapterMusic = new ViewPagerPlaylistAdapter(getSupportFragmentManager());
+        adapterMusic.addFragment(playAlbum);
+        adapterMusic.addFragment(playASong);
+        viewPagerPlayM.setAdapter(adapterMusic);
     }
 
     private void getSupportActionBar(Toolbar playMToolBar) {
