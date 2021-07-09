@@ -1,24 +1,16 @@
-package com.example.musicapp.Fragment;
+package com.example.musicapp.Activity;
 
-import android.graphics.Color;
-import android.media.Image;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,23 +20,16 @@ import com.example.musicapp.Entity.Playlist;
 import com.example.musicapp.Entity.Song;
 import com.example.musicapp.R;
 import com.example.musicapp.Service.FirebaseReference;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import jp.wasabeef.blurry.Blurry;
-
-public class PlaylistFragment extends Fragment implements FirebaseReference {
+public class PlaylistActivity extends AppCompatActivity implements FirebaseReference {
     View view;
     PlaylistAdapter playlistAdapter;
     RecyclerView playlistView;
@@ -53,8 +38,9 @@ public class PlaylistFragment extends Fragment implements FirebaseReference {
     Toolbar toolbar;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_songcaterogy, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_songcaterogy);
         playlistView = (RecyclerView) view.findViewById(R.id.playlist);
         playlistTitle = (TextView) view.findViewById(R.id.appbarSubTitle);
         playlistBanner = (ImageView) view.findViewById(R.id.appbarImage);
@@ -65,7 +51,6 @@ public class PlaylistFragment extends Fragment implements FirebaseReference {
 
 
         getData();
-        return view;
     }
 
     private void renderViewFromPlaylist(Playlist playlist) {
@@ -78,8 +63,8 @@ public class PlaylistFragment extends Fragment implements FirebaseReference {
     }
 
     private void renderSongsInRecyclerView(List<Song> songs) {
-        playlistAdapter = new PlaylistAdapter(songs, PlaylistFragment.this.getContext(), PlaylistFragment.this);
-        playlistView.setLayoutManager(new LinearLayoutManager(PlaylistFragment.this.getContext()));
+        playlistAdapter = new PlaylistAdapter(songs, this, this);
+        playlistView.setLayoutManager(new LinearLayoutManager(this));
         playlistView.setAdapter(playlistAdapter);
     }
 
