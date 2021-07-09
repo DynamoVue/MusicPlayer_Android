@@ -10,20 +10,19 @@
     >
 
     <!-- TODO: Update blank fragment layout -->
-    <android.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/playMToolBar"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:background="@color/com_facebook_blue"
-        >
-    </android.widget.Toolbar>
+        />
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/playMViewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="8"
-        ></androidx.viewpager.widget.ViewPager>
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -52,8 +51,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="9"
-                android:id="@+id/songPlayThrough">
-            </SeekBar>
+                android:id="@+id/songPlayThrough"
+            />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -65,7 +64,7 @@
                 android:gravity="center"
                 android:textColor="@color/black"
                 android:layout_weight="0.5"
-                ></TextView>
+                />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

@@ -272,16 +272,6 @@ public class PlayMusicActivity extends AppCompatActivity {
         playDaSong(0);
     }
 
-    public void playDaSong(int position){
-        if(songs.size() > 0){
-            Song daSong = songs.get(position);
-            playASong.setCircleImageView(daSong.getImageURL());
-            getSupportActionBar().setTitle(daSong.getSongName());
-            new PlayMp3().execute(daSong.getMp3URL());
-            imgPlay.setImageResource(R.drawable.iconpause);
-        }
-    }
-
     class PlayMp3 extends AsyncTask<String, Void, String> {
 
         @Override
@@ -318,5 +308,15 @@ public class PlayMusicActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
         txtTotalSongTime.setText(sdf.format(mediaPlayer.getDuration()));
         skSongPlayThrough.setMax(mediaPlayer.getDuration());
+    }
+
+    public void playDaSong(int position){
+        if(songs.size() > 0){
+            Song daSong = songs.get(position);
+            playASong.setCircleImageView(daSong.getImageURL());
+            getSupportActionBar().setTitle(daSong.getSongName());
+            new PlayMp3().execute(daSong.getMp3URL());
+            imgPlay.setImageResource(R.drawable.iconpause);
+        }
     }
 }
