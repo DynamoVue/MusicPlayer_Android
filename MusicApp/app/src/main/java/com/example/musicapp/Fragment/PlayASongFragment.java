@@ -13,8 +13,10 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 import com.example.musicapp.R;
+import com.squareup.picasso.Picasso;
 
 /**
+ * Or so call play disk song => display the song with the cover in the disk shape
  * A simple {@link Fragment} subclass.
  * Use the {@link PlayASongFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -49,10 +51,10 @@ public class PlayASongFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static PlayASongFragment newInstance(String param1, String param2) {
         PlayASongFragment fragment = new PlayASongFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+//        Bundle args = new Bundle();
+//        args.putString(ARG_PARAM1, param1);
+//        args.putString(ARG_PARAM2, param2);
+//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -60,8 +62,8 @@ public class PlayASongFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+//            mParam1 = getArguments().getString(ARG_PARAM1);
+//            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -78,5 +80,9 @@ public class PlayASongFragment extends Fragment {
 //        objectAnimator.setRepeatMode(ValueAnimator.RESTART);
 //        objectAnimator.setInterpolator(new LinearInterpolator());
         return view;
+    }
+
+    public void setCircleImageView(String url){
+        Picasso.get().load(url).into(imgView);
     }
 }

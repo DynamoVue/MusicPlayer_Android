@@ -6,7 +6,13 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.StrictMode;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -21,11 +27,13 @@ import com.example.musicapp.Fragment.PlayASongFragment;
 import com.example.musicapp.Fragment.PlayAlbumFragment;
 import com.example.musicapp.R;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class PlayMusicActivity extends AppCompatActivity {
 
-    Toolbar playMToolBar;
+    androidx.appcompat.widget.Toolbar playMToolBar;
     TextView txtSongTime, txtTotalSongTime;
     SeekBar skSongPlayThrough;
     ImageButton imgPlay, imgNext, imgPrev, imgRandom, imgRepeat;
@@ -34,13 +42,44 @@ public class PlayMusicActivity extends AppCompatActivity {
     public static  ViewPagerPlaylistAdapter adapterMusic;
     PlayASongFragment playASong;
     PlayAlbumFragment playAlbum;
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_music);
-        init();
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         getDataFromIntent();
+        init();
+        eventClick();
+    }
+
+    private void eventClick() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(adapterMusic.getItem(1) != null){
+                    if(songs.size() > 0){
+                        playASong.setCircleImageView(songs.get(0).getImageURL());
+                        handler.removeCallbacks(this);
+                    }else{
+                        handler.postDelayed(this, 500);
+                        //500s lai kiem tra url va set hinh anh neu fail
+                    }
+                }
+            }
+        }, 500);
+        imgPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.pause();
+                    imgPlay.setImageResource(R.drawable.iconpause);
+                }
+            }
+        });
     }
 
     private void getDataFromIntent() {
@@ -69,8 +108,9 @@ public class PlayMusicActivity extends AppCompatActivity {
         imgRandom = findViewById(R.id.imageBSuffle);
         imgRepeat = findViewById(R.id.imageBRepeat);
         viewPagerPlayM = findViewById(R.id.playMViewPager);
+        //This two belows is weir, consider vids 54,55
         setSupportActionBar(playMToolBar);
-        getSupportActionBar(playMToolBar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);;
         playMToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,11 +123,52 @@ public class PlayMusicActivity extends AppCompatActivity {
         adapterMusic.addFragment(playAlbum);
         adapterMusic.addFragment(playASong);
         viewPagerPlayM.setAdapter(adapterMusic);
+
+        //Play immediately after clicking
+        if(songs.size() > 0){
+            playASong = (PlayASongFragment) adapterMusic.getItem(1);
+            getSupportActionBar().setTitle(songs.get(0).getSongName());
+            new PlayMp3().execute(songs.get(0).getMp3URL());
+            imgPlay.setImageResource(R.drawable.iconpause);
+        }
+
     }
 
-    private void getSupportActionBar(Toolbar playMToolBar) {
+    class PlayMp3 extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return strings[0];
+        }
+
+        @Override
+        protected void onPostExecute(String song) {
+            super.onPostExecute(song);
+            try{
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        //Dung va khoi tao lai tranh van de xay ra khi xu ly bat dong bo
+                        mediaPlayer.stop();
+                        mediaPlayer.reset();
+                    }
+                });
+                mediaPlayer.setDataSource(song);
+                mediaPlayer.prepare(); //Must have this
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+
+            mediaPlayer.start();
+            TimeSong();
+        }
     }
 
-    private void setSupportActionBar(Toolbar playMToolBar) {
+    private void TimeSong() {
+        SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+        txtTotalSongTime.setText(sdf.format(mediaPlayer.getDuration()));
+        skSongPlayThrough.setMax(mediaPlayer.getDuration());
     }
 }

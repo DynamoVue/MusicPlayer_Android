@@ -6,11 +6,10 @@
         android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:layout_margin="10dp"
     >
         <TextView
             android:id="@+id/tvPlayMusicIndex"
-            android:layout_margin="10dp"
             android:textSize="17sp"
             android:textColor="@color/black"
             android:text="1"
@@ -20,6 +19,7 @@
 
         <TextView
             android:id="@+id/tvPlayMusicSongName"
+            android:layout_toRightOf="@+id/tvPlayMusicIndex"
             android:text="Song name"
             android:maxWidth="250dp"
             android:ellipsize="end"
@@ -33,16 +33,16 @@
 
         <TextView
             android:id="@+id/tvPlayMusicArtist"
-            android:text="Artist name"
-            android:maxWidth="250dp"
-            android:ellipsize="end"
-            android:textSize="12sp"
-            android:textColor="@color/black"
-            android:layout_marginLeft="10dp"
-            android:singleLine="true"
+            android:layout_toRightOf="@id/tvPlayMusicSongName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            />
+            android:layout_marginLeft="10dp"
+            android:ellipsize="end"
+            android:maxWidth="250dp"
+            android:singleLine="true"
+            android:text="Artist name"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
     </RelativeLayout>
 
 
