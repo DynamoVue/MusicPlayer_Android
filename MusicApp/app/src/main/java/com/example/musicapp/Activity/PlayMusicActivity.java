@@ -250,7 +250,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         imgRepeat = findViewById(R.id.imageBRepeat);
         viewPagerPlayM = findViewById(R.id.playMViewPager);
         //This two belows is weir, consider vids 54,55
-        setSupportActionBar(playMToolBar);
+//        setSupportActionBar(playMToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);;
         playMToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
