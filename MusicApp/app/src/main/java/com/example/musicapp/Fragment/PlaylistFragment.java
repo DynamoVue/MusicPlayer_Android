@@ -48,7 +48,7 @@ public class PlaylistFragment extends Fragment implements FirebaseReference {
     View view;
     PlaylistAdapter playlistAdapter;
     RecyclerView playlistView;
-    ImageView playlistBanner, playlistThumbNail;
+    ImageView playlistBanner, playlistThumbNail, backButton;
     TextView playlistTitle, playlistTotalSongs;
     Toolbar toolbar;
 
@@ -59,8 +59,11 @@ public class PlaylistFragment extends Fragment implements FirebaseReference {
         playlistTitle = (TextView) view.findViewById(R.id.appbarSubTitle);
         playlistBanner = (ImageView) view.findViewById(R.id.appbarImage);
         playlistThumbNail = (ImageView) view.findViewById(R.id.appbarSubImage);
+        backButton = (ImageView) view.findViewById(R.id.backButton);
         playlistTotalSongs = (TextView) view.findViewById(R.id.appbarSubDesc);
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+
+
         getData();
         return view;
     }
