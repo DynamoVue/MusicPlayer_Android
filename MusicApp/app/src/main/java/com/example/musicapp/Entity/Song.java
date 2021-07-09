@@ -6,20 +6,29 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
-public class Song implements Serializable, Comparable, Parcelable {
+public class Song implements Serializable, Comparable {
+    private Long id;
     private String songName;
     private String singer;
     private String imageURL;
     private String mp3URL;
     private String typeSong;
     private String themeSong;
+    private String lyrics;
+    private String content;
+
 
     public String getSinger() {
         return singer;
     }
 
-    private String lyrics;
-    private String content;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getSingers() {
         return singer;
@@ -98,16 +107,6 @@ public class Song implements Serializable, Comparable, Parcelable {
     @Override
     public int compareTo(Object o) {
         return 0;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
     }
 }
 

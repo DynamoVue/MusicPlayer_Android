@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -227,12 +228,14 @@ public class PlayMusicActivity extends AppCompatActivity {
         Intent intent = getIntent();
         songs.clear();
         if(intent != null){
+            intent.getExtras();
             if(intent.hasExtra("song")){
-                Song song = intent.getParcelableExtra("song");
+                Song song = (Song) intent.getExtras().getSerializable("song");
                 songs.add(song);
             }
             if(intent.hasExtra("album")){
-                ArrayList<Song> album = intent.getParcelableArrayListExtra("album");
+                ArrayList<Song> album = (ArrayList<Song>) intent.getExtras().getSerializable("album");
+                Log.d("zxc", album.toString() + "");
                 songs.addAll(album);
             }
         }

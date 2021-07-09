@@ -5,7 +5,9 @@ import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicapp.Activity.PlayMusicActivity;
 import com.example.musicapp.Activity.PlaylistActivity;
 import com.example.musicapp.AsyncTask.DownloadAsyncTask;
 import com.example.musicapp.Entity.Playlist;
@@ -69,6 +72,15 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
         holder.index.setText(position + 1  + "");
         Picasso.get().load(songs.get(position).getImageURL()).fit().centerCrop().into(holder.imageThumbnail);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(holder.itemView.getContext(), PlayMusicActivity.class);
+                myIntent.putExtra("song", songs.get(position)); //Optional parameters
+                holder.itemView.getContext().startActivity(myIntent);
+            }
+        });
+
         handleMoreClicked(holder.showMore, holder.itemView, songs.get(position));
     }
 
@@ -89,7 +101,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
             index = itemView.findViewById(R.id.cardItemIndex);
             imageThumbnail = itemView.findViewById(R.id.cardItemImage);
             showMore = (ImageView) itemView.findViewById(R.id.cardItemMore);
-
         }
     }
 

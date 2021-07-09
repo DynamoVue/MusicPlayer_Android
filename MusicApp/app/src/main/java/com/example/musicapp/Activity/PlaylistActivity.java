@@ -1,9 +1,11 @@
 package com.example.musicapp.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,29 +28,42 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistActivity extends AppCompatActivity implements FirebaseReference {
-    View view;
     PlaylistAdapter playlistAdapter;
     RecyclerView playlistView;
     ImageView playlistBanner, playlistThumbNail, backButton;
     TextView playlistTitle, playlistTotalSongs;
     Toolbar toolbar;
+    Button btnShuffle;
+
+    List<Song> songs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_songcaterogy);
-        playlistView = (RecyclerView) view.findViewById(R.id.playlist);
-        playlistTitle = (TextView) view.findViewById(R.id.appbarSubTitle);
-        playlistBanner = (ImageView) view.findViewById(R.id.appbarImage);
-        playlistThumbNail = (ImageView) view.findViewById(R.id.appbarSubImage);
-        backButton = (ImageView) view.findViewById(R.id.backButton);
-        playlistTotalSongs = (TextView) view.findViewById(R.id.appbarSubDesc);
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
+        playlistView = (RecyclerView) findViewById(R.id.playlist);
+        playlistTitle = (TextView) findViewById(R.id.appbarSubTitle);
+        playlistBanner = (ImageView) findViewById(R.id.appbarImage);
+        playlistThumbNail = (ImageView) findViewById(R.id.appbarSubImage);
+        backButton = (ImageView) findViewById(R.id.backButton);
+        playlistTotalSongs = (TextView) findViewById(R.id.appbarSubDesc);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        btnShuffle = (Button) findViewById(R.id.btnShuffle);
+
+        btnShuffle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(PlaylistActivity.this, PlayMusicActivity.class);
+                myIntent.putExtra("album", (Serializable)songs); //Optional parameters
+                startActivity(myIntent);
+            }
+        });
 
         getData();
     }
@@ -70,7 +85,7 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
 
     private void getSongsData(Playlist playlist) {
         if (playlist.getSongs() != null && playlist.getSongs().size() > 0) {
-            List<Song> songs = new ArrayList<>();
+            songs = new ArrayList<>();
             ArrayList<Long> songIds = (ArrayList<Long>)playlist.getSongs();
 
             DATABASE_REFERENCE_MUSIC.addListenerForSingleValueEvent(new ValueEventListener() {
