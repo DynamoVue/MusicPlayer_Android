@@ -2,15 +2,10 @@ package com.example.musicapp.AsyncTask;
 
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 
-import androidx.fragment.app.Fragment;
-
 import com.example.musicapp.Adapter.PlaylistAdapter;
-import com.example.musicapp.Fragment.PlaylistFragment;
 
 
 public class DownloadAsyncTask extends AsyncTask< String, Integer, Boolean > {
