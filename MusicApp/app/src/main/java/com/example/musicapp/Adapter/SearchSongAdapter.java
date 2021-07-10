@@ -34,6 +34,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +90,7 @@ public class SearchSongAdapter extends RecyclerView.Adapter<SearchSongAdapter.Vi
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, PlayMusicActivity.class);
-                    intent.putExtra("song", songs.get(getPosition()));
+                    intent.putExtra("song", (Serializable)songs.get(getPosition()));
                     context.startActivity(intent);
                 }
             });
