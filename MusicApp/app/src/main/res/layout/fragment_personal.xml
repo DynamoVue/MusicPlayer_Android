@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout
+        android:layout_marginTop="15dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:id="@+id/userInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.cardview.widget.CardView
+            app:cardCornerRadius="30dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/userAvatarContainer"
+            android:layout_width="35dp"
+            android:layout_height="35dp">
+            <ImageView
+                android:id="@+id/userAvatar"
+                android:src="@drawable/ic_baseline_account_circle_24"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.cardview.widget.CardView>
+        <TextView
+            android:width="200dp"
+            android:singleLine="true"
+            android:layout_toRightOf="@+id/userAvatarContainer"
+            android:layout_centerVertical="true"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
+            android:text="Login"
+            android:id="@+id/userEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <com.google.android.material.button.MaterialButton
+            android:textSize="12sp"
+            app:cornerRadius="30dp"
+            android:backgroundTint="@color/dark"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/btnLogin"
+            android:text="LOGIN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+        </com.google.android.material.button.MaterialButton>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/adsbanner"
+        android:layout_below="@+id/userInfo"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:foreground="@drawable/image_overlay"
+            android:id="@+id/songAds"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:id="@+id/songAdsTitle"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="20dp"
+            android:text="MUSIC FOR YOU"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:layout_below="@+id/songAdsTitle"
+            android:id="@+id/songAdsSubTitle"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="20dp"
+            android:text="Listen to song personalized for you"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_shape"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="visible"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:padding="10dp">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/iconplay"/>
+        </FrameLayout>
+    </RelativeLayout>
+    <LinearLayout
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/adsbanner"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:id="@+id/favContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_shape_smaller"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="visible"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:padding="8dp">
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@drawable/ic_heart"/>
+        </FrameLayout>
+        <TextView
+            android:textSize="18sp"
+            android:textColor="@color/dark"
+            android:text="Favorites"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <LinearLayout
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/favContainer"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/dark"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="RECENTLY PLAYED"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <org.imaginativeworld.whynotimagecarousel.ImageCarousel
+            app:carouselPadding="0dp"
+            app:carouselPaddingBottom="0dp"
+            app:carouselPaddingEnd="80dp"
+            app:carouselPaddingStart="80dp"
+            app:carouselPaddingTop="0dp"
+            app:showBottomShadow="true"
+            app:bottomShadowAlpha="0.8"
+            app:bottomShadowHeight="64dp"
+            app:captionTextSize="16sp"
+            app:captionMargin="15dp"
+            android:id="@+id/carousel"
+            app:showIndicator="false"
+            app:carouselBackground="@drawable/carousel_background"
+            app:autoWidthFixing="true"
+            app:showTopShadow="false"
+            app:showNavigationButtons="false"
+            android:layout_width="match_parent"
+            app:carouselType="BLOCK"
+            app:scaleOnScroll="true"
+            android:layout_marginTop="20dp"
+            android:layout_height="180dp" />
+    </LinearLayout>
+</RelativeLayout>

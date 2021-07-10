@@ -1,16 +1,18 @@
 package com.example.musicapp.Adapter;
 
-import android.app.Activity;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,13 +23,13 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicapp.Activity.PlayMusicActivity;
+import com.example.musicapp.Activity.PlaylistActivity;
+import com.example.musicapp.AsyncTask.DownloadAsyncTask;
 import com.example.musicapp.Entity.Playlist;
 import com.example.musicapp.Entity.Song;
-import com.example.musicapp.Fragment.PlaylistFragment;
 import com.example.musicapp.R;
 import com.example.musicapp.Service.FirebaseReference;
-import com.facebook.FacebookSdk;
-import com.facebook.share.internal.ShareStoryFeature;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.ShareStoryContent;
@@ -40,20 +42,17 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyViewHolder> implements FirebaseReference  {
     public List<Song> songs;
     public Context mContext;
     public Song songDisplayMore;
-    public androidx.fragment.app.Fragment fragment;
+    public PlaylistActivity fragment;
 
-    public PlaylistAdapter(List<Song> songs, Context mContext, Fragment fragment) {
+    public PlaylistAdapter(List<Song> songs, Context mContext, PlaylistActivity fragment) {
         this.songs = songs;
         this.mContext = mContext;
         this.fragment = fragment;
@@ -68,11 +67,21 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull PlaylistAdapter.MyViewHolder holder, int position) {
-        songDisplayMore = songs.get(position);
         holder.title.setText(songs.get(position).getSongName());
         holder.desc.setText(songs.get(position).getSingers());
         holder.index.setText(position + 1  + "");
         Picasso.get().load(songs.get(position).getImageURL()).fit().centerCrop().into(holder.imageThumbnail);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(holder.itemView.getContext(), PlayMusicActivity.class);
+                myIntent.putExtra("song", songs.get(position)); //Optional parameters
+                holder.itemView.getContext().startActivity(myIntent);
+            }
+        });
+
+        handleMoreClicked(holder.showMore, holder.itemView, songs.get(position));
     }
 
     @Override
@@ -92,15 +101,39 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
             index = itemView.findViewById(R.id.cardItemIndex);
             imageThumbnail = itemView.findViewById(R.id.cardItemImage);
             showMore = (ImageView) itemView.findViewById(R.id.cardItemMore);
-
-            handleMoreClicked(showMore, itemView);
         }
     }
 
-    private void handleMoreClicked(ImageView view, View itemView) {
+    public void returnFromThread(Boolean result, ProgressDialog dialog) {
+        Toast.makeText(fragment, "Download Successful!", Toast.LENGTH_LONG).show();
+        dialog.dismiss();
+    }
+
+    private void downloadFile(Context context, String fileName, String fileExtension, String destinationDirectory, String url) {
+        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalFilesDir(context, destinationDirectory, fileName + "." + fileExtension);
+        final long downloadId = downloadManager.enqueue(request);
+
+        ProgressDialog dialog = new ProgressDialog(fragment);
+        dialog.setMessage("Your file is start downloading!");
+        dialog.setTitle("Download " + songDisplayMore.getSongName());
+        dialog.setProgressStyle(dialog.STYLE_SPINNER);
+        dialog.setCancelable(false);
+        dialog.show();
+
+        DownloadAsyncTask downloadTask = new DownloadAsyncTask(this, dialog, downloadManager);
+        downloadTask.execute(Long.toString(downloadId));
+    }
+
+    private void handleMoreClicked(ImageView view, View itemView, Song currentSong) {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                songDisplayMore = currentSong;
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(view.getContext(), R.style.BottomSheetDialogTheme);
                 View bottomSheetView = LayoutInflater.from(view.getContext())
                         .inflate(R.layout.layout_bottom_sheet, (LinearLayout)itemView.findViewById(R.id.bottomSheetContainer));
@@ -114,40 +147,36 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
                     @Override
                     public void onClick(View v) {
                         StorageReference httpsReference = storage.getReferenceFromUrl(songDisplayMore.getMp3URL());
-                        ProgressDialog dialog = new ProgressDialog(fragment.getContext());
-                        dialog.setMessage("Your file is start downloading!");
-                        dialog.setTitle("Download " + songDisplayMore.getSongName());
-                        dialog.setProgressStyle(dialog.STYLE_SPINNER);
-                        dialog.setCancelable(false);
-                        dialog.show();
+
+                        File localFile = null;
                         try {
-                            File localFile = File.createTempFile("audioFile", "mp3");
-                            httpsReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                    dialog.dismiss();
-                                    Toast.makeText(view.getContext(), "Download Successful!", Toast.LENGTH_LONG).show();
-                                    bottomSheetDialog.dismiss();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception exception) {
-                                    // Handle any errors
-                                }
-                            }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
-                                @Override
-                                public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                    //calculating progress percentage
-                                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-
-                                    //displaying percentage in progress dialog
-                                    dialog.setMessage("Downloaed " + ((int) progress) + "%...");
-                                }
-                            });
-
+                            localFile = File.createTempFile("asd",songDisplayMore.getSongName() + ".mp3");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
+                        httpsReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                downloadFile(fragment, songDisplayMore.getSongName() + "", "mp3", Environment.DIRECTORY_DOWNLOADS, songDisplayMore.getMp3URL());
+                                bottomSheetDialog.dismiss();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle any errors
+                                Log.d("error", exception.getMessage());
+                            }
+                        }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                //calculating progress percentage
+//                                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+//
+//                                //displaying percentage in progress dialog
+                            }
+                        });
+
                     }
                 });
 
@@ -202,10 +231,10 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
                         nestedBottomSheetView.findViewById(R.id.copy).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                Toast.makeText(view.getContext(), "Copied to clipboard", Toast.LENGTH_LONG).show();
                                 ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
                                 ClipData clip = ClipData.newPlainText("Copied to clipboard", songDisplayMore.getMp3URL());
                                 clipboard.setPrimaryClip(clip);
-                                Toast.makeText(view.getContext(), "Copied to clipboard", Toast.LENGTH_LONG).show();
                                 nestedBottomSheetDialog.dismiss();
                             }
                         });
