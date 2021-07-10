@@ -2,7 +2,6 @@ package com.example.musicapp.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.NoCopySpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.musicapp.Activity.PlaylistActivity;
 import com.example.musicapp.Adapter.ListPlaylistAdapter;
 import com.example.musicapp.Entity.Playlist;
 import com.example.musicapp.R;
@@ -57,14 +57,14 @@ public class ListPlaylistFragment extends Fragment implements FirebaseReference 
                 adapter = new ListPlaylistAdapter(getActivity(), android.R.layout.simple_list_item_1, playlists);
                 listView.setAdapter(adapter);
                 setListViewHeightBasedOnChildren(listView);
-//                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                        Intent intent = new Intent(getActivity(), PlaylistFragment.class);
-//                        intent.putExtra("item_playlist", playlists.get(position));
-//                        startActivity(intent);
-//                    }
-//                });
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getActivity(), PlaylistActivity.class);
+                        intent.putExtra("item_playlist", playlists.get(position));
+                        startActivity(intent);
+                    }
+                });
             }
 
             //
