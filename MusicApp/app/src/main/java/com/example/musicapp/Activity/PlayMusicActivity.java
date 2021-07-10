@@ -304,6 +304,7 @@ public class PlayMusicActivity extends AppCompatActivity {
 
             mediaPlayer.start();
             TimeSong();
+            updateTime();
         }
     }
 
@@ -320,6 +321,86 @@ public class PlayMusicActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(daSong.getSongName());
             new PlayMp3().execute(daSong.getMp3URL());
             imgPlay.setImageResource(R.drawable.iconpause);
+            updateTime();
         }
+    }
+
+    private void updateTime(){
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(mediaPlayer != null){
+                    skSongPlayThrough.setProgress(mediaPlayer.getCurrentPosition());
+                    SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+                    txtSongTime.setText(sdf.format(mediaPlayer.getCurrentPosition()));
+                    handler.postDelayed(this, 300);
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            next = true;
+                            try{
+                                Thread.sleep(1000);
+                            }catch (InterruptedException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            }
+        }, 300);
+        //This part is to play the next song
+        Handler anotherHandler = new Handler();
+        anotherHandler.postDelayed(new Runnable() {
+            @Override
+            //continuously check if should or not to play the next song
+            public void run() {
+                if(next){
+                    if(songs.size() > 0){
+                        if(mediaPlayer.isPlaying() || mediaPlayer != null){
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        }
+                        if(position < songs.size()){
+                            imgPlay.setImageResource(R.drawable.iconpause);
+                            position ++;
+                            if(isRepeated){
+                                if(position == 0){
+                                    position = songs.size();
+                                }
+                                position -= 1;
+                            }
+                            if(isRandom){
+                                Random random = new Random();
+                                int index = random.nextInt(songs.size());
+                                if(index == position){
+                                    index ++;
+                                }
+                                position = index;
+                            }
+                            if(position > songs.size() - 1){
+                                position = 0;
+                            }
+                            playDaSong(position);
+                        }
+                    }
+                    imgNext.setClickable(false);
+                    imgPrev.setClickable(false);
+                    Handler temp = new Handler();
+                    temp.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            imgPrev.setClickable(true);
+                            imgNext.setClickable(true);
+                        }
+                    }, 5000);
+                    next = false;
+                    anotherHandler.removeCallbacks(this); //remove this call back to run a new one
+                }else{
+                    anotherHandler.postDelayed(this, 300);
+                }
+            }
+        }, 1000);
     }
 }
