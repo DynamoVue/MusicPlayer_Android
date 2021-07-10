@@ -12,8 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicApp">
-
-<!--        <activity android:name=".Activity.PlayMusicActivity"></activity>-->
+        <activity android:name=".Activity.FavorSongsActivity"></activity>
+        <!-- <activity android:name=".Activity.PlayMusicActivity"></activity> -->
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider183916957036292"
@@ -28,16 +28,15 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
+
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-
         <activity android:name=".Activity.PlaylistActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-
         <activity android:name=".Activity.PlayMusicActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistActivity extends AppCompatActivity implements FirebaseReference {
+    String playlistId;
+
     PlaylistAdapter playlistAdapter;
     RecyclerView playlistView;
     ImageView playlistBanner, playlistThumbNail, backButton;
@@ -63,6 +65,10 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
         playlistTotalSongs = (TextView) findViewById(R.id.appbarSubDesc);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         btnShuffle = (Button) findViewById(R.id.btnShuffle);
+
+        Intent intent = getIntent();
+
+        playlistId = intent.hasExtra("playlistId") ? intent.getStringExtra("playlistId") : "1";
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,8 +99,8 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
         Picasso.get().load(playlist.getPlaylistUrl()).fit().centerCrop().into(playlistBanner);
     }
 
-    private void renderSongsInRecyclerView(List<Song> songs) {
-        playlistAdapter = new PlaylistAdapter(songs, this, this);
+    private void renderSongsInRecyclerView(List<Song> songs, String playlistId) {
+        playlistAdapter = new PlaylistAdapter(songs, this, this, playlistId);
         playlistView.setLayoutManager(new LinearLayoutManager(this));
         playlistView.setAdapter(playlistAdapter);
     }
@@ -102,13 +108,13 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
     private void getSongsData(Playlist playlist) {
         if (playlist.getSongs() != null && playlist.getSongs().size() > 0) {
             songs = new ArrayList<>();
-            ArrayList<Long> songIds = (ArrayList<Long>)playlist.getSongs();
+            ArrayList<String> songIds = (ArrayList<String>)playlist.getSongs();
 
             DATABASE_REFERENCE_MUSIC.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Long id = (Long)dataSnapshot.child("id").getValue();
+                        String id = (String)dataSnapshot.child("id").getValue();
                         int index = songIds.indexOf(id);
                         if (index > -1) {
                             Song song = dataSnapshot.getValue(Song.class);
@@ -116,7 +122,7 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
                         }
                     }
 
-                    renderSongsInRecyclerView(songs);
+                    renderSongsInRecyclerView(songs, playlist.getId());
                 }
 
                 @Override
@@ -128,16 +134,15 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
     }
 
     private void getData() {
-        Query connectedPlaylist = DATABASE_REFERENCE_PLAYLIST.child("2");
-//        Query playlistFilteredByIds = DATABASE_REFERENCE_MUSIC.orderByChild("id");
+        Query connectedPlaylist = DATABASE_REFERENCE_PLAYLIST.child(playlistId);
         connectedPlaylist.addListenerForSingleValueEvent(new ValueEventListener() {
-            List<Long> songIds;
+            List<String> songIds;
             String playlistName, playlistUrl, id;
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     if (dataSnapshot.hasChildren() && dataSnapshot.getKey().equals("songs")) {
-                        songIds = (ArrayList<Long>) dataSnapshot.getValue();
+                        songIds = (ArrayList<String>) dataSnapshot.getValue();
                     }
 
                     if (dataSnapshot.getKey().equals("playlistName")) playlistName = (String)dataSnapshot.getValue();
@@ -155,32 +160,5 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
 
             }
         });
-    }
-
-    public void setListViewHeightBasedOnChildren(ListView listView) {
-//        ListAdapter listAdapter = listView.getAdapter();
-//        if (listAdapter == null) {
-//            // pre-condition
-//            return;
-//        }
-//
-//        int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
-//        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.AT_MOST);
-//        for (int i = 0; i < listAdapter.getCount(); i++) {
-//            View listItem = listAdapter.getView(i, null, listView);
-//
-//            if (listItem != null) {
-//                // This next line is needed before you call measure or else you won't get measured height at all. The listitem needs to be drawn first to know the height.
-//                listItem.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-//                listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
-//                totalHeight += listItem.getMeasuredHeight();
-//
-//            }
-//        }
-//
-//        ViewGroup.LayoutParams params = listView.getLayoutParams();
-//        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-//        listView.setLayoutParams(params);
-//        listView.requestLayout();
     }
 }
