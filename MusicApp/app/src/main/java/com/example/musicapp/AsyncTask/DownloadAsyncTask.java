@@ -6,14 +6,15 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 
 import com.example.musicapp.Adapter.PlaylistAdapter;
+import com.example.musicapp.Interfaces.IDownloadAdpater;
 
 
 public class DownloadAsyncTask extends AsyncTask< String, Integer, Boolean > {
-    PlaylistAdapter adapter;
+    IDownloadAdpater adapter;
     ProgressDialog dialog;
     DownloadManager downloadManager;
 
-    public DownloadAsyncTask(PlaylistAdapter adapter, ProgressDialog dialog, DownloadManager downloadManager) {
+    public DownloadAsyncTask(IDownloadAdpater adapter, ProgressDialog dialog, DownloadManager downloadManager) {
         this.adapter = adapter; this.dialog = dialog; this.downloadManager = downloadManager;
     }
 

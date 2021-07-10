@@ -22,8 +22,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
 import com.example.musicapp.Activity.AuthenticationActivity;
+import com.example.musicapp.Activity.FavorSongsActivity;
 import com.example.musicapp.Activity.PlayMusicActivity;
 import com.example.musicapp.Activity.PlaylistActivity;
+import com.example.musicapp.Animation.ItemAnimation;
 import com.example.musicapp.Entity.Playlist;
 import com.example.musicapp.Entity.Song;
 import com.example.musicapp.MainActivity;
@@ -56,9 +58,11 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
     private int MY_REQUEST_CODE = 2009;
 
     private Button btnLogin;
-    private TextView userEmail;
+    private TextView userEmail, favMore;
     private ImageView userAvatar;
     private ImageView songAds;
+
+    private ImageCarousel recentPlayedCarousel, favSongsCarousel;
 
     FirebaseUser user;
 
@@ -84,6 +88,8 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                 if (user == null) {
                     userEmail.setText("Login");
                     btnLogin.setText("Login");
+//                    favSongsCarousel.removeAllViews();
+//                    recentPlayedCarousel.();
                 }
             }
         };
@@ -109,8 +115,22 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
 
         userAvatar = (ImageView) view.findViewById(R.id.userAvatar);
         userEmail = (TextView) view.findViewById(R.id.userEmail);
+        favMore = (TextView) view.findViewById(R.id.favMore);
         btnLogin = (Button) view.findViewById(R.id.btnLogin);
         songAds = (ImageView) view.findViewById(R.id.songAds);
+        favSongsCarousel = view.findViewById(R.id.favSongsCarousel);
+        recentPlayedCarousel = view.findViewById(R.id.carousel);
+
+        ItemAnimation.animateLeftRight(favSongsCarousel, 0);
+        ItemAnimation.animateFadeIn(recentPlayedCarousel, 0);
+
+        favMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), FavorSongsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,9 +162,8 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                     list.add(new CarouselItem(temp.getImageURL(), temp.getSongName() + " - " + temp.getSingers()));
                 }
 
-                ImageCarousel carousel = view.findViewById(R.id.favSongsCarousel);
-                carousel.registerLifecycle(getLifecycle());
-                carousel.setData(list);
+                favSongsCarousel.registerLifecycle(getLifecycle());
+                favSongsCarousel.setData(list);
             }
 
             @Override
@@ -176,11 +195,10 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                     }
                 };
 
-                ImageCarousel carousel = view.findViewById(R.id.carousel);
-                carousel.registerLifecycle(getLifecycle());
-                carousel.setData(list);
+                recentPlayedCarousel.registerLifecycle(getLifecycle());
+                recentPlayedCarousel.setData(list);
 
-                carousel.setCarouselListener(new CarouselListener() {
+                recentPlayedCarousel.setCarouselListener(new CarouselListener() {
                     @Override
                     public ViewBinding onCreateViewHolder(LayoutInflater layoutInflater, ViewGroup viewGroup) {
                         return null;
@@ -212,12 +230,12 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                 runnable = new Runnable() {
                     @Override
                     public void run() {
-                        Picasso.get().load(playlists.get(_currentItem).getPlaylistUrl()).fit().centerCrop().into(songAds);
-
                         _currentItem++;
                         if (_currentItem >= playlists.size()) {
                             _currentItem = 0;
                         }
+                        Picasso.get().load(playlists.get(_currentItem).getPlaylistUrl()).fit().centerCrop().into(songAds);
+                        ItemAnimation.animateFadeIn(songAds, 0);
                         handler.postDelayed(runnable, 4500);
                     }
                 };
