@@ -102,13 +102,13 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
     private void getSongsData(Playlist playlist) {
         if (playlist.getSongs() != null && playlist.getSongs().size() > 0) {
             songs = new ArrayList<>();
-            ArrayList<Long> songIds = (ArrayList<Long>)playlist.getSongs();
+            ArrayList<String> songIds = (ArrayList<String>)playlist.getSongs();
 
             DATABASE_REFERENCE_MUSIC.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Long id = (Long)dataSnapshot.child("id").getValue();
+                        String id = (String)dataSnapshot.child("id").getValue();
                         int index = songIds.indexOf(id);
                         if (index > -1) {
                             Song song = dataSnapshot.getValue(Song.class);
@@ -131,13 +131,13 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
         Query connectedPlaylist = DATABASE_REFERENCE_PLAYLIST.child("2");
 //        Query playlistFilteredByIds = DATABASE_REFERENCE_MUSIC.orderByChild("id");
         connectedPlaylist.addListenerForSingleValueEvent(new ValueEventListener() {
-            List<Long> songIds;
+            List<String> songIds;
             String playlistName, playlistUrl, id;
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     if (dataSnapshot.hasChildren() && dataSnapshot.getKey().equals("songs")) {
-                        songIds = (ArrayList<Long>) dataSnapshot.getValue();
+                        songIds = (ArrayList<String>) dataSnapshot.getValue();
                     }
 
                     if (dataSnapshot.getKey().equals("playlistName")) playlistName = (String)dataSnapshot.getValue();
