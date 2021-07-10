@@ -1,7 +1,9 @@
 package com.example.musicapp.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +45,12 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
     List<Song> songs;
 
     @Override
+    public void onBackPressed() {
+        finish();
+        return;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_songcaterogy);
@@ -55,6 +63,14 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
         playlistTotalSongs = (TextView) findViewById(R.id.appbarSubDesc);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         btnShuffle = (Button) findViewById(R.id.btnShuffle);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                return;
+            }
+        });
 
         btnShuffle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,13 +136,13 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    if (dataSnapshot.hasChildren()) {
+                    if (dataSnapshot.hasChildren() && dataSnapshot.getKey().equals("songs")) {
                         songIds = (ArrayList<Long>) dataSnapshot.getValue();
                     }
 
                     if (dataSnapshot.getKey().equals("playlistName")) playlistName = (String)dataSnapshot.getValue();
                     if (dataSnapshot.getKey().equals("playlistUrl")) playlistUrl = (String)dataSnapshot.getValue();
-                    if (dataSnapshot.getKey().equals("id")) id = Long.toString((Long)dataSnapshot.getValue());
+                    if (dataSnapshot.getKey().equals("id")) id = (String)dataSnapshot.getValue();
                 }
 
                 Playlist playlist = new Playlist(id, playlistName, playlistUrl, songIds);
