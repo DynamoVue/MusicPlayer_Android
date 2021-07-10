@@ -123,7 +123,7 @@ public class PlaylistFragment extends Fragment implements FirebaseReference {
 
                     if (dataSnapshot.getKey().equals("playlistName")) playlistName = (String)dataSnapshot.getValue();
                     if (dataSnapshot.getKey().equals("playlistUrl")) playlistUrl = (String)dataSnapshot.getValue();
-                    if (dataSnapshot.getKey().equals("id")) id = Long.toString((Long)dataSnapshot.getValue());
+                    if (dataSnapshot.getKey().equals("id")) id = (String)dataSnapshot.getValue();
                 }
 
                 Playlist playlist = new Playlist(id, playlistName, playlistUrl, songIds);
