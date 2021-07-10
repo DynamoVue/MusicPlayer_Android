@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,10 +16,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewbinding.ViewBinding;
 
-import com.example.musicapp.Adapter.BannerAdapter;
 import com.example.musicapp.Activity.AuthenticationActivity;
+import com.example.musicapp.Entity.Playlist;
 import com.example.musicapp.Entity.Song;
 import com.example.musicapp.R;
 import com.example.musicapp.Service.FirebaseReference;
@@ -26,30 +28,33 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.NotNull;
 import com.squareup.picasso.Picasso;
+
+import org.imaginativeworld.whynotimagecarousel.ImageCarousel;
+import org.imaginativeworld.whynotimagecarousel.listener.CarouselListener;
+import org.imaginativeworld.whynotimagecarousel.model.CarouselItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import me.relex.circleindicator.CircleIndicator;
 
 public class PersonalFragment extends Fragment implements FirebaseReference {
     private View view;
     private FirebaseAuth.AuthStateListener authListener;
     private int MY_REQUEST_CODE = 2009;
 
-    ViewPager viewPager;
     private Button btnLogin;
     private TextView userEmail;
     private ImageView userAvatar;
+    private ImageView songAds;
 
     FirebaseUser user;
 
-    CircleIndicator circleIndicator;
-    private BannerAdapter bannerAdapter;
     Runnable runnable;
     Handler handler;
-    int currentItem;
+    int _currentItem = 0;
 
     private void init() {
         authListener = new FirebaseAuth.AuthStateListener() {
@@ -90,9 +95,8 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
 
         userAvatar = (ImageView) view.findViewById(R.id.userAvatar);
         userEmail = (TextView) view.findViewById(R.id.userEmail);
-        btnLogin = (Button) view.findViewById(R.id.login);
-        viewPager = view.findViewById(R.id.viewPager);
-        circleIndicator = view.findViewById(R.id.indicatorFirst);
+        btnLogin = (Button) view.findViewById(R.id.btnLogin);
+        songAds = (ImageView) view.findViewById(R.id.songAds);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,28 +111,40 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
             }
         });
 
-        DATABASE_REFERENCE_MUSIC.addListenerForSingleValueEvent(new ValueEventListener() {
+        DATABASE_REFERENCE_PLAYLIST.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                currentItem = 0;
-                List<Song> songList = new ArrayList<>();
+                List<CarouselItem> list = new ArrayList<>();
+                List<Playlist> playlists = new ArrayList<>();
+
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Song song = dataSnapshot.getValue(Song.class);
-                    songList.add(song);
-                }
-                bannerAdapter = new BannerAdapter(getActivity(), songList);
-                viewPager.setAdapter(bannerAdapter);
-                circleIndicator.setViewPager(viewPager);
+                        for (DataSnapshot dataSnapshotChildren : snapshot.getChildren()) {
+                            String playlistName = (String)dataSnapshotChildren.child("playlistName").getValue();
+                            String playlistUrl = (String)dataSnapshotChildren.child("playlistUrl").getValue();
+                            String id = (String)dataSnapshotChildren.child("id").getValue();
+
+                            playlists.add(new Playlist(id, playlistName, playlistUrl, new ArrayList<>()));
+                            list.add(new CarouselItem(playlistUrl, playlistName));
+                        }
+                };
+
+                ImageCarousel carousel = view.findViewById(R.id.carousel);
+                carousel.registerLifecycle(getLifecycle());
+                carousel.setData(list);
+
+
+                Picasso.get().load(playlists.get(_currentItem).getPlaylistUrl()).fit().centerCrop().into(songAds);
+
                 handler = new Handler();
                 runnable = new Runnable() {
                     @Override
                     public void run() {
-                        currentItem = viewPager.getCurrentItem();
-                        currentItem++;
-                        if (currentItem >= viewPager.getAdapter().getCount()) {
-                            currentItem = 0;
+                        Picasso.get().load(playlists.get(_currentItem).getPlaylistUrl()).fit().centerCrop().into(songAds);
+
+                        _currentItem++;
+                        if (_currentItem >= playlists.size()) {
+                            _currentItem = 0;
                         }
-                        viewPager.setCurrentItem(currentItem, true);
                         handler.postDelayed(runnable, 4500);
                     }
                 };
