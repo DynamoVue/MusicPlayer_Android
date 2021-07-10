@@ -56,16 +56,15 @@ public class ListPlaylistFragment extends Fragment implements FirebaseReference 
                 }
                 adapter = new ListPlaylistAdapter(getActivity(), android.R.layout.simple_list_item_1, playlists);
                 listView.setAdapter(adapter);
-//                setListViewHeightBasedOnChildren(listView);
+                setListViewHeightBasedOnChildren(listView);
 //                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //                    @Override
 //                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                        Intent intent = new Intent(getActivity(), ListMusicActivity.class);
+//                        Intent intent = new Intent(getActivity(), PlaylistFragment.class);
 //                        intent.putExtra("item_playlist", playlists.get(position));
 //                        startActivity(intent);
 //                    }
 //                });
-//
             }
 
             //
