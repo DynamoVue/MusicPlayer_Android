@@ -7,7 +7,7 @@ import android.os.Parcelable;
 import java.io.Serializable;
 
 public class Song implements Serializable, Comparable {
-    private Long id;
+    private String id;
     private String songName;
     private String singer;
     private String imageURL;
@@ -22,11 +22,11 @@ public class Song implements Serializable, Comparable {
         return singer;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

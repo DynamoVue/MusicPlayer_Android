@@ -1,5 +1,6 @@
 package com.example.musicapp.Fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,28 +16,37 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
 import com.example.musicapp.Activity.AuthenticationActivity;
+import com.example.musicapp.Activity.PlayMusicActivity;
+import com.example.musicapp.Activity.PlaylistActivity;
 import com.example.musicapp.Entity.Playlist;
 import com.example.musicapp.Entity.Song;
+import com.example.musicapp.MainActivity;
 import com.example.musicapp.R;
 import com.example.musicapp.Service.FirebaseReference;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.squareup.picasso.Picasso;
 
 import org.imaginativeworld.whynotimagecarousel.ImageCarousel;
 import org.imaginativeworld.whynotimagecarousel.listener.CarouselListener;
+import org.imaginativeworld.whynotimagecarousel.listener.CarouselOnScrollListener;
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -57,6 +67,8 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
     int _currentItem = 0;
 
     private void init() {
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
@@ -65,6 +77,8 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                     userEmail.setText(user.getDisplayName());
                     Picasso.get().load(user.getPhotoUrl()).fit().centerCrop().into(userAvatar);
                     btnLogin.setText("Logout");
+                    getFavoriteSongs();
+                    getRecentPlayed();
                 }
 
                 if (user == null) {
@@ -111,6 +125,36 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
             }
         });
 
+        init();
+        return view;
+    }
+
+    private void getFavoriteSongs() {
+        DatabaseReference playlistRef = DATABASE_REFERENCE_USERS.child(user.getUid());
+
+        playlistRef.child("favoriteSongs").limitToFirst(5).addListenerForSingleValueEvent(new ValueEventListener() {
+            List<CarouselItem> list = new ArrayList<>();
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Song temp = (Song) dataSnapshot.getValue(Song.class);
+                    list.add(new CarouselItem(temp.getImageURL(), temp.getSongName() + " - " + temp.getSingers()));
+                }
+
+                ImageCarousel carousel = view.findViewById(R.id.favSongsCarousel);
+                carousel.registerLifecycle(getLifecycle());
+                carousel.setData(list);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void getRecentPlayed() {
         DATABASE_REFERENCE_PLAYLIST.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -118,20 +162,49 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                 List<Playlist> playlists = new ArrayList<>();
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        for (DataSnapshot dataSnapshotChildren : snapshot.getChildren()) {
-                            String playlistName = (String)dataSnapshotChildren.child("playlistName").getValue();
-                            String playlistUrl = (String)dataSnapshotChildren.child("playlistUrl").getValue();
-                            String id = (String)dataSnapshotChildren.child("id").getValue();
+                    for (DataSnapshot dataSnapshotChildren : snapshot.getChildren()) {
+                        String playlistName = (String)dataSnapshotChildren.child("playlistName").getValue();
+                        String playlistUrl = (String)dataSnapshotChildren.child("playlistUrl").getValue();
+                        String id = (String)dataSnapshotChildren.child("id").getValue();
 
-                            playlists.add(new Playlist(id, playlistName, playlistUrl, new ArrayList<>()));
-                            list.add(new CarouselItem(playlistUrl, playlistName));
-                        }
+                        playlists.add(new Playlist(id, playlistName, playlistUrl, new ArrayList<>()));
+                        Map<String, String> headers = new HashMap<>();
+                        headers.put("caption", playlistName);
+                        headers.put("id", id);
+
+                        list.add(new CarouselItem(playlistUrl, playlistName, headers));
+                    }
                 };
 
                 ImageCarousel carousel = view.findViewById(R.id.carousel);
                 carousel.registerLifecycle(getLifecycle());
                 carousel.setData(list);
 
+                carousel.setCarouselListener(new CarouselListener() {
+                    @Override
+                    public ViewBinding onCreateViewHolder(LayoutInflater layoutInflater, ViewGroup viewGroup) {
+                        return null;
+                    }
+
+                    @Override
+                    public void onBindViewHolder(ViewBinding viewBinding, CarouselItem carouselItem, int i) {
+
+                    }
+
+                    @Override
+                    public void onLongClick(int position, @NotNull CarouselItem dataObject) {
+                        // ...
+                    }
+
+                    @Override
+                    public void onClick(int position, @NotNull CarouselItem carouselItem) {
+                        String playlistId =carouselItem.getHeaders().get("id");
+                        Intent myIntent = new Intent(PersonalFragment.this.getContext(), PlaylistActivity.class);
+                        myIntent.putExtra("playlistId", playlistId);
+                        PersonalFragment.this.getContext().startActivity(myIntent);
+                        return;
+                    }
+                });
 
                 Picasso.get().load(playlists.get(_currentItem).getPlaylistUrl()).fit().centerCrop().into(songAds);
 
@@ -156,9 +229,6 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
 
             }
         });
-
-        init();
-        return view;
     }
 
     @Override
