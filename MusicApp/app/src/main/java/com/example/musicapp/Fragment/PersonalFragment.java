@@ -1,13 +1,14 @@
 package com.example.musicapp.Fragment;
 
-import android.app.Activity;
-import android.app.Person;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,26 +16,29 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.viewbinding.ViewBinding;
 
-import com.example.musicapp.AuthenticationActivity;
+import com.example.musicapp.Activity.AuthenticationActivity;
+import com.example.musicapp.Entity.Playlist;
+import com.example.musicapp.Entity.Song;
 import com.example.musicapp.R;
 import com.example.musicapp.Service.FirebaseReference;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.NotNull;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
+import org.imaginativeworld.whynotimagecarousel.ImageCarousel;
+import org.imaginativeworld.whynotimagecarousel.listener.CarouselListener;
+import org.imaginativeworld.whynotimagecarousel.model.CarouselItem;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 public class PersonalFragment extends Fragment implements FirebaseReference {
     private View view;
@@ -44,8 +48,13 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
     private Button btnLogin;
     private TextView userEmail;
     private ImageView userAvatar;
+    private ImageView songAds;
 
     FirebaseUser user;
+
+    Runnable runnable;
+    Handler handler;
+    int _currentItem = 0;
 
     private void init() {
         authListener = new FirebaseAuth.AuthStateListener() {
@@ -86,7 +95,9 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
 
         userAvatar = (ImageView) view.findViewById(R.id.userAvatar);
         userEmail = (TextView) view.findViewById(R.id.userEmail);
-        btnLogin = (Button) view.findViewById(R.id.login);
+        btnLogin = (Button) view.findViewById(R.id.btnLogin);
+        songAds = (ImageView) view.findViewById(R.id.songAds);
+
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +108,52 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                 }
                 Intent intent = new Intent(getActivity(), AuthenticationActivity.class);
                 startActivityForResult(intent, MY_REQUEST_CODE);
+            }
+        });
+
+        DATABASE_REFERENCE_PLAYLIST.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                List<CarouselItem> list = new ArrayList<>();
+                List<Playlist> playlists = new ArrayList<>();
+
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        for (DataSnapshot dataSnapshotChildren : snapshot.getChildren()) {
+                            String playlistName = (String)dataSnapshotChildren.child("playlistName").getValue();
+                            String playlistUrl = (String)dataSnapshotChildren.child("playlistUrl").getValue();
+                            String id = (String)dataSnapshotChildren.child("id").getValue();
+
+                            playlists.add(new Playlist(id, playlistName, playlistUrl, new ArrayList<>()));
+                            list.add(new CarouselItem(playlistUrl, playlistName));
+                        }
+                };
+
+                ImageCarousel carousel = view.findViewById(R.id.carousel);
+                carousel.registerLifecycle(getLifecycle());
+                carousel.setData(list);
+
+
+                Picasso.get().load(playlists.get(_currentItem).getPlaylistUrl()).fit().centerCrop().into(songAds);
+
+                handler = new Handler();
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        Picasso.get().load(playlists.get(_currentItem).getPlaylistUrl()).fit().centerCrop().into(songAds);
+
+                        _currentItem++;
+                        if (_currentItem >= playlists.size()) {
+                            _currentItem = 0;
+                        }
+                        handler.postDelayed(runnable, 4500);
+                    }
+                };
+                handler.postDelayed(runnable, 4500);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 

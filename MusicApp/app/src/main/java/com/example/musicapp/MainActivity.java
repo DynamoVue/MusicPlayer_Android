@@ -13,7 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.example.musicapp.Adapter.MainViewPagerAdapter;
 import com.example.musicapp.Fragment.PersonalFragment;
 import com.example.musicapp.Fragment.HomeFragment;
-import com.example.musicapp.Fragment.PlaylistFragment;
+import com.example.musicapp.Fragment.SearchFragment;
 import com.google.android.material.tabs.TabLayout;
 
 import java.security.MessageDigest;
@@ -49,9 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void init() {
         MainViewPagerAdapter mainViewPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager());
-        mainViewPagerAdapter.addFragment(new HomeFragment(), "HOME");
-        mainViewPagerAdapter.addFragment(new PlaylistFragment(), "SEARCH");
-        mainViewPagerAdapter.addFragment(new PersonalFragment(), "USER");
+        mainViewPagerAdapter.addFragment(new HomeFragment(), "Home");
+        mainViewPagerAdapter.addFragment(new SearchFragment(), "Search");
+        mainViewPagerAdapter.addFragment(new PersonalFragment(), "My Music");
         viewPager.setAdapter(mainViewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.getTabAt(0).setIcon(R.drawable.icontrangchu);

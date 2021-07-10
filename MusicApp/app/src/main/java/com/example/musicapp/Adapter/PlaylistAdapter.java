@@ -1,21 +1,18 @@
 package com.example.musicapp.Adapter;
 
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,17 +21,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicapp.Activity.PlayMusicActivity;
+import com.example.musicapp.Activity.PlaylistActivity;
 import com.example.musicapp.AsyncTask.DownloadAsyncTask;
 import com.example.musicapp.Entity.Playlist;
 import com.example.musicapp.Entity.Song;
-import com.example.musicapp.Fragment.PlaylistFragment;
 import com.example.musicapp.R;
 import com.example.musicapp.Service.FirebaseReference;
-import com.facebook.FacebookSdk;
-import com.facebook.share.internal.ShareStoryFeature;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.ShareStoryContent;
@@ -47,22 +42,17 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyViewHolder> implements FirebaseReference  {
     public List<Song> songs;
     public Context mContext;
     public Song songDisplayMore;
-    public androidx.fragment.app.Fragment fragment;
+    public PlaylistActivity fragment;
 
-    public PlaylistAdapter(List<Song> songs, Context mContext, Fragment fragment) {
+    public PlaylistAdapter(List<Song> songs, Context mContext, PlaylistActivity fragment) {
         this.songs = songs;
         this.mContext = mContext;
         this.fragment = fragment;
@@ -81,6 +71,15 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
         holder.desc.setText(songs.get(position).getSingers());
         holder.index.setText(position + 1  + "");
         Picasso.get().load(songs.get(position).getImageURL()).fit().centerCrop().into(holder.imageThumbnail);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(holder.itemView.getContext(), PlayMusicActivity.class);
+                myIntent.putExtra("song", songs.get(position)); //Optional parameters
+                holder.itemView.getContext().startActivity(myIntent);
+            }
+        });
 
         handleMoreClicked(holder.showMore, holder.itemView, songs.get(position));
     }
@@ -102,12 +101,11 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
             index = itemView.findViewById(R.id.cardItemIndex);
             imageThumbnail = itemView.findViewById(R.id.cardItemImage);
             showMore = (ImageView) itemView.findViewById(R.id.cardItemMore);
-
         }
     }
 
     public void returnFromThread(Boolean result, ProgressDialog dialog) {
-        Toast.makeText(fragment.getContext(), "Download Successful!", Toast.LENGTH_LONG).show();
+        Toast.makeText(fragment, "Download Successful!", Toast.LENGTH_LONG).show();
         dialog.dismiss();
     }
 
@@ -120,7 +118,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
         request.setDestinationInExternalFilesDir(context, destinationDirectory, fileName + "." + fileExtension);
         final long downloadId = downloadManager.enqueue(request);
 
-        ProgressDialog dialog = new ProgressDialog(fragment.getContext());
+        ProgressDialog dialog = new ProgressDialog(fragment);
         dialog.setMessage("Your file is start downloading!");
         dialog.setTitle("Download " + songDisplayMore.getSongName());
         dialog.setProgressStyle(dialog.STYLE_SPINNER);
@@ -160,7 +158,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
                         httpsReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                downloadFile(fragment.getContext(), songDisplayMore.getSongName() + "", "mp3", Environment.DIRECTORY_DOWNLOADS, songDisplayMore.getMp3URL());
+                                downloadFile(fragment, songDisplayMore.getSongName() + "", "mp3", Environment.DIRECTORY_DOWNLOADS, songDisplayMore.getMp3URL());
                                 bottomSheetDialog.dismiss();
                             }
                         }).addOnFailureListener(new OnFailureListener() {

@@ -9,7 +9,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
         <ImageView
             android:id="@+id/backButton"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_baseline_arrow_back_24"
@@ -46,7 +46,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogin"
                 android:textSize="12sp"
-                android:backgroundTint="@color/black"
+                android:backgroundTint="@color/dark"
                 android:drawableLeft="@drawable/googleg_standard_color_18"
                 android:layout_marginTop="20dp"
                 app:cornerRadius="50dp"
