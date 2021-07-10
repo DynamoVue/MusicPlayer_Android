@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicapp.Activity.AuthenticationActivity;
@@ -59,46 +61,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyViewHolder> implements FirebaseReference, IDownloadAdpater {
+public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.MyViewHolder> implements FirebaseReference, IDownloadAdpater {
     public List<Song> songs;
+    public List<Song> filteredSongs;
     public Context mContext;
     public Song songDisplayMore;
     public PlaylistActivity fragment;
-    public String playlistId;
     FirebaseUser user;
-    private FirebaseAuth.AuthStateListener authListener;
 
-    public PlaylistAdapter(List<Song> songs, Context mContext, PlaylistActivity fragment, String playlistId) {
+    public SongFilterAdapter(List<Song> songs, Context mContext) {
         this.songs = songs;
+        this.filteredSongs = songs;
         this.mContext = mContext;
-        this.playlistId = playlistId;
-        this.fragment = fragment;
     }
-
-//    private void init() {
-//        authListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
-//                user = FirebaseAuth.getInstance().getCurrentUser();
-//            }
-//        };
-//
-//        FirebaseAuth.getInstance().addAuthStateListener(authListener);
-//    }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.fragment_card, parent, false);
+        View v = LayoutInflater.from(mContext).inflate(R.layout.fragment_card_without_index, parent, false);
         return new MyViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PlaylistAdapter.MyViewHolder holder, int position) {
-        holder.title.setText(songs.get(position).getSongName());
-        holder.desc.setText(songs.get(position).getSingers());
-        holder.index.setText(position + 1  + "");
-        Picasso.get().load(songs.get(position).getImageURL()).fit().centerCrop().into(holder.imageThumbnail);
+    public void onBindViewHolder(@NonNull SongFilterAdapter.MyViewHolder holder, int position) {
+        holder.title.setText(filteredSongs.get(position).getSongName());
+        holder.desc.setText(filteredSongs.get(position).getSingers());
+        Picasso.get().load(filteredSongs.get(position).getImageURL()).fit().centerCrop().into(holder.imageThumbnail);
 
         ItemAnimation.animateFadeIn(holder.itemView, position);
 
@@ -106,21 +94,21 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(holder.itemView.getContext(), PlayMusicActivity.class);
-                myIntent.putExtra("song", songs.get(position)); //Optional parameters
+                myIntent.putExtra("song", filteredSongs.get(position)); //Optional parameters
                 holder.itemView.getContext().startActivity(myIntent);
             }
         });
 
-        handleMoreClicked(holder.showMore, holder.itemView, songs.get(position));
+        handleMoreClicked(holder.showMore, holder.itemView, filteredSongs.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return songs.size();
+        return filteredSongs.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView title, desc, index;
+        TextView title, desc;
         ImageView imageThumbnail;
         ImageView showMore;
 
@@ -128,7 +116,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
             super(itemView);
             desc = itemView.findViewById(R.id.cardItemDesc);
             title = itemView.findViewById(R.id.cardItemTitle);
-            index = itemView.findViewById(R.id.cardItemIndex);
             imageThumbnail = itemView.findViewById(R.id.cardItemImage);
             showMore = (ImageView) itemView.findViewById(R.id.cardItemMore);
             user = FirebaseAuth.getInstance().getCurrentUser();
@@ -168,7 +155,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
 
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(view.getContext(), R.style.BottomSheetDialogTheme);
                 View bottomSheetView = LayoutInflater.from(view.getContext())
-                        .inflate(R.layout.layout_bottom_sheet, (LinearLayout)itemView.findViewById(R.id.bottomSheetContainer));
+                        .inflate(R.layout.layout_bottom_sheet_favorite, (LinearLayout)itemView.findViewById(R.id.bottomSheetContainer));
 
                 ((TextView)bottomSheetView.findViewById(R.id.songTitle)).setText(songDisplayMore.getSongName());
                 ((TextView)bottomSheetView.findViewById(R.id.songSingers)).setText(songDisplayMore.getSingers());
@@ -283,7 +270,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
                     }
                 });
 
-                bottomSheetView.findViewById(R.id.addFavor).setOnClickListener(new View.OnClickListener() {
+                bottomSheetView.findViewById(R.id.removeFavor).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -308,19 +295,19 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
                                 for (int i = 0; i < favorSongs.size(); i++) {
                                     if (favorSongs.get(i).getId().equals(songDisplayMore.getId())) {
                                         alreadyContained = true;
+                                        favorSongs.remove(i);
                                         break;
                                     }
                                 }
 
-                                if (!alreadyContained) {
+                                if (alreadyContained) {
                                     Map<String, List<Song>> users = new HashMap<>();
-                                    favorSongs.add(songDisplayMore);
                                     users.put("favoriteSongs", favorSongs);
 
                                     playlistRef.setValue(users);
                                 }
 
-                                Toast.makeText(v.getContext(), "Add " + songDisplayMore.getSongName() + " Successful!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(v.getContext(), "Remove " + songDisplayMore.getSongName() + " Successful!", Toast.LENGTH_LONG).show();
                                 bottomSheetDialog.dismiss();
                             }
 
@@ -338,5 +325,38 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
         });
     }
 
+    public Filter getFilter(){
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String Key = charSequence.toString();
+                if(Key.isEmpty()){
+                    filteredSongs = songs;
+                }
+                else{
+                    List<Song> lstFiltered = new ArrayList<>();
+
+                    for(Song song: songs){
+                        if(song.getSongName().toLowerCase().contains(Key.toLowerCase())){
+                            lstFiltered.add(song);
+                        }
+                    }
+
+                    filteredSongs = lstFiltered;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = filteredSongs;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                filteredSongs = (List<Song>)filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+
+    }
 
 }
