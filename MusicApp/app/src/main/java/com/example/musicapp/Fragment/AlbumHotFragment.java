@@ -4,14 +4,17 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.musicapp.Adapter.AlbumAdapter;
 import com.example.musicapp.Entity.Album;
 import com.example.musicapp.R;
 import com.example.musicapp.Service.FirebaseReference;
@@ -40,6 +43,7 @@ public class AlbumHotFragment extends Fragment implements FirebaseReference {
     View view;
     private RecyclerView recyclerViewAlbum;
     private TextView tvMoreAlbum;
+    AlbumAdapter albumAdapter;
 
     public AlbumHotFragment() {
         // Required empty public constructor
@@ -90,16 +94,17 @@ public class AlbumHotFragment extends Fragment implements FirebaseReference {
         Log.d("TEST ALBUM", "Test before");
         DATABASE_REFERENCE_ALBUM.addValueEventListener(new ValueEventListener() {
             List<Album> albums = new ArrayList<>();
-
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                Log.d("TEST ALBUM", "In onDataChange");
                 for (DataSnapshot ds : snapshot.getChildren()) {
-                    Log.d("TEST ALBUM", "In for");
                     Album album = ds.getValue(Album.class);
-                    Log.d("TEST ALBUM", album.toString());
                     albums.add(album);
                 }
+                albumAdapter = new AlbumAdapter(getActivity(), (ArrayList<Album>) albums);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+                recyclerViewAlbum.setLayoutManager(linearLayoutManager);
+                recyclerViewAlbum.setAdapter(albumAdapter);
             }
 
             @Override
