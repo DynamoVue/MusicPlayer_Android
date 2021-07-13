@@ -16,16 +16,16 @@
             android:name="com.example.musicapp.Fragment.BannerFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></fragment>
+<<<<<<<<< Temporary merge branch 1
 
         <fragment
             android:id="@+id/fragmentListPlaylist"
             android:name="com.example.musicapp.Fragment.ListPlaylistFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"></fragment>
-
+=========
         <fragment
-            android:id="@+id/fragmentCategoryTheme"
-            android:name="com.example.musicapp.Fragment.CategoryThemeFragment"
+            android:id="@+id/fragmentAlbumHot"
+            android:name="com.example.musicapp.Fragment.AlbumHotFragment"
+>>>>>>>>> Temporary merge branch 2
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></fragment>
     </LinearLayout>
