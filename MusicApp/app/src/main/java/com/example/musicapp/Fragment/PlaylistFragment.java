@@ -89,8 +89,7 @@ public class PlaylistFragment extends Fragment implements FirebaseReference {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                      //  Long id = (Long)dataSnapshot.child("id").getValue();
-                        Long id = Long.valueOf((String) dataSnapshot.child("id").getValue());
+                        Long id = (Long)dataSnapshot.child("id").getValue();
                         int index = songIds.indexOf(id);
                         if (index > -1) {
                             Song song = dataSnapshot.getValue(Song.class);
@@ -124,8 +123,7 @@ public class PlaylistFragment extends Fragment implements FirebaseReference {
 
                     if (dataSnapshot.getKey().equals("playlistName")) playlistName = (String)dataSnapshot.getValue();
                     if (dataSnapshot.getKey().equals("playlistUrl")) playlistUrl = (String)dataSnapshot.getValue();
-                  //  if (dataSnapshot.getKey().equals("id")) id = Long.toString((Long)dataSnapshot.getValue());
-                    if (dataSnapshot.getKey().equals("id")) id = Long.toString(Long.valueOf((String)dataSnapshot.getValue()));
+                    if (dataSnapshot.getKey().equals("id")) id = Long.toString((Long)dataSnapshot.getValue());
                 }
 
                 Playlist playlist = new Playlist(id, playlistName, playlistUrl, songIds);
