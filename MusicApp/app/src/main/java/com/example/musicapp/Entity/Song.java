@@ -1,23 +1,34 @@
 package com.example.musicapp.Entity;
 
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.io.Serializable;
 
-public class Song implements Serializable {
+public class Song implements Serializable, Comparable {
+    private String id;
     private String songName;
     private String singer;
     private String imageURL;
     private String mp3URL;
     private String typeSong;
     private String themeSong;
+    private String lyrics;
+    private String content;
+
 
     public String getSinger() {
         return singer;
     }
 
-    private String lyrics;
-    private String content;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getSingers() {
         return singer;
@@ -91,6 +102,11 @@ public class Song implements Serializable {
         Bundle bundle = new Bundle();
         bundle.putString("songName", this.getSongName());
         return bundle;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
     }
 }
 
