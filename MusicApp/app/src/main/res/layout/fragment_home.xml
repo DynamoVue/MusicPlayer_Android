@@ -17,9 +17,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></fragment>
 
+
         <fragment
             android:id="@+id/fragmentListPlaylist"
             android:name="com.example.musicapp.Fragment.ListPlaylistFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></fragment>
+        <fragment
+            android:id="@+id/fragmentAlbumHot"
+            android:name="com.example.musicapp.Fragment.AlbumHotFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></fragment>
     </LinearLayout>
