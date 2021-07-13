@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.musicapp.Adapter.MainViewPagerAdapter;
+import com.example.musicapp.Adapter.MainViewPagerAdapter;
 import com.example.musicapp.Fragment.HomeFragment;
 import com.example.musicapp.Fragment.PlaylistFragment;
 import com.google.android.material.tabs.TabLayout;
