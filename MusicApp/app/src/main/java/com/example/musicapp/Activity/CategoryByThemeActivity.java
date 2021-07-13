@@ -1,23 +1,39 @@
 package com.example.musicapp.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.musicapp.Adapter.CategoryByThemeAdapter;
+import com.example.musicapp.Entity.Categories;
 import com.example.musicapp.Entity.Theme;
 import com.example.musicapp.R;
+import com.example.musicapp.Service.FirebaseReference;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
-public class CategoryByThemeActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class CategoryByThemeActivity extends AppCompatActivity implements FirebaseReference {
     private Theme theme;
     private ImageView btnBack;
     RecyclerView recyclerViewTheLoaiTheoChuDe;
     Toolbar toolbarTheLoaiTheoChuDe;
+    private ArrayList<Categories> categories;
+    CategoryByThemeAdapter categoryByThemeAdapter;
+    String idTheme;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,9 +45,15 @@ public class CategoryByThemeActivity extends AppCompatActivity {
                 finish();
             }
         });
+        Intent intent = getIntent();
+
+        idTheme = intent.hasExtra("idTheme") ? intent.getStringExtra("idTheme") : "1";
         GetIntent();
         init();
+        GetData();
     }
+
+
 
     private void init(){
         recyclerViewTheLoaiTheoChuDe = findViewById(R.id.recyclerViewTheLoaiTheoChuDe);
@@ -46,6 +68,30 @@ public class CategoryByThemeActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void GetData(){
+        Query connectedPlaylist = DATABASE_REFERENCE_CATEGORY.child("idTheme");
+        connectedPlaylist.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                categories = new ArrayList<>();
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    Categories category = dataSnapshot.getValue(Categories.class);
+                    category.setIdTheme(dataSnapshot.getKey());
+                    categories.add(category);
+                }
+
+                categoryByThemeAdapter = new CategoryByThemeAdapter(CategoryByThemeActivity.this,categories);
+                recyclerViewTheLoaiTheoChuDe.setLayoutManager(new GridLayoutManager(CategoryByThemeActivity.this, 2) );
+                recyclerViewTheLoaiTheoChuDe.setAdapter(categoryByThemeAdapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
     }
 
     private void GetIntent() {

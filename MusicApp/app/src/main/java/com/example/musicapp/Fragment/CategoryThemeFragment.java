@@ -47,9 +47,36 @@ public class CategoryThemeFragment extends Fragment implements FirebaseReference
             }
         });
         GetData();
+//        GetData1();
         return view;
     }
-
+//    private void GetData1(){
+//        DATABASE_REFERENCE_CATEGORY.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                categories = new ArrayList<>();
+//                for(DataSnapshot item : dataSnapshot.getChildren()){
+//                    Categories category = item.getValue(Categories.class);
+//                    category.setIdCategory(dataSnapshot.getKey());
+//                    categories.add(category);
+//                }
+//
+//                LinearLayout linearLayout = new LinearLayout(getActivity());
+//                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+//
+//                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(580, 250);
+//                layoutParams.setMargins(10,20,10,30);
+//
+//
+//                horizontalScrollView.addView(linearLayout);
+//            }
+//
+//            @Override
+//            public void onCancelled( DatabaseError error) {
+//
+//            }
+//        });
+//    }
     private void GetData(){
         DATABASE_REFERENCE_THEME.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -60,23 +87,6 @@ public class CategoryThemeFragment extends Fragment implements FirebaseReference
                     theme.setIdTheme(dataSnapshot.getKey());
                     themes.add(theme);
                 }
-
-                DATABASE_REFERENCE_CATEGORY.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        categories = new ArrayList<>();
-                        for(DataSnapshot item : dataSnapshot.getChildren()){
-                            Categories category = item.getValue(Categories.class);
-                            category.setIdCategory(dataSnapshot.getKey());
-                            categories.add(category);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled( DatabaseError error) {
-
-                    }
-                });
 
                 LinearLayout linearLayout = new LinearLayout(getActivity());
                 linearLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -109,6 +119,7 @@ public class CategoryThemeFragment extends Fragment implements FirebaseReference
 //                    cardView.addView(imageView);
 //                    linearLayout.addView(cardView);
 //                }
+            horizontalScrollView.addView(linearLayout);
 
 
             }
