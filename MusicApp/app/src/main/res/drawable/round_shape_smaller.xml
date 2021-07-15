@@ -2,7 +2,7 @@
     android:shape="oval">
 
     <gradient
-        android:angle="135"
+        android:angle="150"
         android:startColor="@color/pink"
         android:endColor="@color/pink"/>
 

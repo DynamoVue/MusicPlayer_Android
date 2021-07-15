@@ -1,7 +1,6 @@
 package com.example.musicapp.Fragment;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,63 +8,15 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 import com.example.musicapp.R;
 import com.squareup.picasso.Picasso;
 
-/**
- * Or so call play disk song => display the song with the cover in the disk shape
- * A simple {@link Fragment} subclass.
- * Use the {@link PlayASongFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class PlayASongFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    View view;
     ImageView imgView;
-    ObjectAnimator objectAnimator;
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public PlayASongFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PlayASongFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static PlayASongFragment newInstance(String param1, String param2) {
-        PlayASongFragment fragment = new PlayASongFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,6 +24,11 @@ public class PlayASongFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_play_a_song, container, false);
         imgView = view.findViewById(R.id.imageViewCircle);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String url = bundle.getString("url");
+            Picasso.get().load(url).fit().centerCrop().into(imgView);
+        }
         //This part will make the disk shape poster rotate
 //        objectAnimator = ObjectAnimator.ofFloat(imgView, "rotation", 0f, 360f);
 //        objectAnimator.setDuration(10000);
@@ -82,7 +38,16 @@ public class PlayASongFragment extends Fragment {
         return view;
     }
 
-    public void setCircleImageView(String url){
-        Picasso.get().load(url).into(imgView);
+    public void setCircleImageView(String url) {
+
+    }
+
+    public static PlayASongFragment newInstance(String text, String url){
+        PlayASongFragment f = new PlayASongFragment();
+        Bundle b = new Bundle();
+        b.putString("msg", text);
+        b.putString("url", url);
+        f.setArguments(b);
+        return f;
     }
 }

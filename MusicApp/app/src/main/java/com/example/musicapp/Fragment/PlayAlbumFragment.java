@@ -64,4 +64,12 @@ public class PlayAlbumFragment extends Fragment {
 
         return view;
     }
+
+    public static PlayAlbumFragment newInstance(String text) {
+        PlayAlbumFragment albumFragment = new PlayAlbumFragment();
+        Bundle b = new Bundle();
+        b.putString("msg", text);
+        albumFragment.setArguments(b);
+        return albumFragment;
+    }
 }
