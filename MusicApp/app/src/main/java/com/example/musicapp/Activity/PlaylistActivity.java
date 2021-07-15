@@ -35,8 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistActivity extends AppCompatActivity implements FirebaseReference {
-    String playlistId;
-
     PlaylistAdapter playlistAdapter;
     RecyclerView playlistView;
     ImageView playlistBanner, playlistThumbNail, backButton;
@@ -65,10 +63,6 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
         playlistTotalSongs = (TextView) findViewById(R.id.appbarSubDesc);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         btnShuffle = (Button) findViewById(R.id.btnShuffle);
-
-        Intent intent = getIntent();
-
-        playlistId = intent.hasExtra("playlistId") ? intent.getStringExtra("playlistId") : "1";
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,8 +93,8 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
         Picasso.get().load(playlist.getPlaylistUrl()).fit().centerCrop().into(playlistBanner);
     }
 
-    private void renderSongsInRecyclerView(List<Song> songs, String playlistId) {
-        playlistAdapter = new PlaylistAdapter(songs, this, this, playlistId);
+    private void renderSongsInRecyclerView(List<Song> songs) {
+        playlistAdapter = new PlaylistAdapter(songs, this, this);
         playlistView.setLayoutManager(new LinearLayoutManager(this));
         playlistView.setAdapter(playlistAdapter);
     }
@@ -122,7 +116,7 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
                         }
                     }
 
-                    renderSongsInRecyclerView(songs, playlist.getId());
+                    renderSongsInRecyclerView(songs);
                 }
 
                 @Override
@@ -134,7 +128,8 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
     }
 
     private void getData() {
-        Query connectedPlaylist = DATABASE_REFERENCE_PLAYLIST.child(playlistId);
+        Query connectedPlaylist = DATABASE_REFERENCE_PLAYLIST.child("2");
+//        Query playlistFilteredByIds = DATABASE_REFERENCE_MUSIC.orderByChild("id");
         connectedPlaylist.addListenerForSingleValueEvent(new ValueEventListener() {
             List<String> songIds;
             String playlistName, playlistUrl, id;

@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.musicapp.Activity.AuthenticationActivity;
 import com.example.musicapp.Activity.PlayMusicActivity;
 import com.example.musicapp.Activity.PlaylistActivity;
 import com.example.musicapp.Animation.ItemAnimation;
@@ -40,13 +39,6 @@ import com.facebook.share.widget.ShareDialog;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -54,37 +46,19 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyViewHolder> implements FirebaseReference, IDownloadAdpater {
     public List<Song> songs;
     public Context mContext;
     public Song songDisplayMore;
     public PlaylistActivity fragment;
-    public String playlistId;
-    FirebaseUser user;
-    private FirebaseAuth.AuthStateListener authListener;
 
-    public PlaylistAdapter(List<Song> songs, Context mContext, PlaylistActivity fragment, String playlistId) {
+    public PlaylistAdapter(List<Song> songs, Context mContext, PlaylistActivity fragment) {
         this.songs = songs;
         this.mContext = mContext;
-        this.playlistId = playlistId;
         this.fragment = fragment;
     }
-
-//    private void init() {
-//        authListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
-//                user = FirebaseAuth.getInstance().getCurrentUser();
-//            }
-//        };
-//
-//        FirebaseAuth.getInstance().addAuthStateListener(authListener);
-//    }
 
     @NonNull
     @Override
@@ -131,7 +105,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
             index = itemView.findViewById(R.id.cardItemIndex);
             imageThumbnail = itemView.findViewById(R.id.cardItemImage);
             showMore = (ImageView) itemView.findViewById(R.id.cardItemMore);
-            user = FirebaseAuth.getInstance().getCurrentUser();
         }
     }
 
@@ -165,7 +138,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
             @Override
             public void onClick(View v) {
                 songDisplayMore = currentSong;
-
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(view.getContext(), R.style.BottomSheetDialogTheme);
                 View bottomSheetView = LayoutInflater.from(view.getContext())
                         .inflate(R.layout.layout_bottom_sheet, (LinearLayout)itemView.findViewById(R.id.bottomSheetContainer));
@@ -178,11 +150,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
                 bottomSheetView.findViewById(R.id.download).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (user == null) {
-                            Intent myIntent = new Intent(fragment, AuthenticationActivity.class);
-                            fragment.startActivity(myIntent);
-                            return;
-                        }
                         StorageReference httpsReference = storage.getReferenceFromUrl(songDisplayMore.getMp3URL());
 
                         File localFile = null;
@@ -220,11 +187,6 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
                 bottomSheetView.findViewById(R.id.share).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (user == null) {
-                            Intent myIntent = new Intent(fragment, AuthenticationActivity.class);
-                            fragment.startActivity(myIntent);
-                            return;
-                        }
                         bottomSheetDialog.dismiss();
                         BottomSheetDialog nestedBottomSheetDialog = new BottomSheetDialog(view.getContext(), R.style.BottomSheetDialogTheme);
                         View nestedBottomSheetView = LayoutInflater.from(view.getContext())
@@ -286,49 +248,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
                 bottomSheetView.findViewById(R.id.addFavor).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        user = FirebaseAuth.getInstance().getCurrentUser();
-                        if (user == null) {
-                            Intent myIntent = new Intent(fragment, AuthenticationActivity.class);
-                            fragment.startActivity(myIntent);
-                            return;
-                        }
-
-                        DatabaseReference playlistRef = DATABASE_REFERENCE_USERS.child(user.getUid());
-
-                        playlistRef.child("favoriteSongs").addListenerForSingleValueEvent(new ValueEventListener() {
-                            ArrayList<Song> favorSongs = new ArrayList<>();
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                    favorSongs.add((Song) dataSnapshot.getValue(Song.class));
-                                }
-
-                                boolean alreadyContained = false;
-
-                                for (int i = 0; i < favorSongs.size(); i++) {
-                                    if (favorSongs.get(i).getId().equals(songDisplayMore.getId())) {
-                                        alreadyContained = true;
-                                        break;
-                                    }
-                                }
-
-                                if (!alreadyContained) {
-                                    Map<String, List<Song>> users = new HashMap<>();
-                                    favorSongs.add(songDisplayMore);
-                                    users.put("favoriteSongs", favorSongs);
-
-                                    playlistRef.setValue(users);
-                                }
-
-                                Toast.makeText(v.getContext(), "Add " + songDisplayMore.getSongName() + " Successful!", Toast.LENGTH_LONG).show();
-                                bottomSheetDialog.dismiss();
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
+                        Toast.makeText(view.getContext(), "Add Favor is Clicked", Toast.LENGTH_LONG).show();
+                        bottomSheetDialog.dismiss();
                     }
                 });
 
