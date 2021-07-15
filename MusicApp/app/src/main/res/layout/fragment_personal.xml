@@ -111,7 +111,15 @@
         android:id="@+id/favContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+<<<<<<< HEAD
+=======
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+>>>>>>> a2974ca6f5a1946b68138c407b95de2c91553508
         <FrameLayout
+            android:layout_centerVertical="true"
+            android:id="@+id/roundedFavorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/round_shape_smaller"
@@ -119,8 +127,6 @@
             android:focusable="true"
             android:visibility="visible"
             android:foreground="?android:attr/selectableItemBackground"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:padding="8dp">
 
@@ -130,11 +136,58 @@
                 android:src="@drawable/ic_heart"/>
         </FrameLayout>
         <TextView
+<<<<<<< HEAD
             android:textSize="18sp"
             android:textColor="@color/dark"
             android:text="Favorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+=======
+            android:id="@+id/favText"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/roundedFavorite"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:text="Favorites"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/favMore"
+                android:padding="10dp"
+                android:textStyle="bold"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:textSize="14sp"
+                android:textColor="@color/pink"
+                android:text="More"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+
+        <org.imaginativeworld.whynotimagecarousel.ImageCarousel
+            app:carouselPadding="0dp"
+            app:carouselPaddingBottom="0dp"
+            app:carouselPaddingEnd="80dp"
+            app:carouselPaddingStart="80dp"
+            app:carouselPaddingTop="0dp"
+            app:showBottomShadow="true"
+            app:bottomShadowAlpha="0.8"
+            app:bottomShadowHeight="64dp"
+            app:captionTextSize="14sp"
+            app:captionMargin="15dp"
+            android:id="@+id/favSongsCarousel"
+            app:showIndicator="false"
+            app:carouselBackground="@drawable/carousel_background"
+            app:autoWidthFixing="true"
+            app:showTopShadow="false"
+            app:showNavigationButtons="false"
+            android:layout_width="match_parent"
+            app:carouselType="BLOCK"
+            app:scaleOnScroll="true"
+            android:layout_marginTop="20dp"
+            android:layout_height="180dp" />
+>>>>>>> a2974ca6f5a1946b68138c407b95de2c91553508
     </LinearLayout>
     <LinearLayout
         android:paddingLeft="10dp"
