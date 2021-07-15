@@ -2,7 +2,10 @@ package com.example.musicapp.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -32,6 +35,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class PlayMusicActivity extends AppCompatActivity {
 
@@ -39,9 +43,10 @@ public class PlayMusicActivity extends AppCompatActivity {
     TextView txtSongTime, txtTotalSongTime;
     SeekBar skSongPlayThrough;
     ImageButton imgPlay, imgNext, imgPrev, imgRandom, imgRepeat;
-    ViewPager viewPagerPlayM;
+
+    ViewPager2 viewPagerPlayM;
     public static ArrayList<Song> songs = new ArrayList<>();
-    public static  ViewPagerPlaylistAdapter adapterMusic;
+    public static ViewPagerPlaylistAdapter adapterMusic;
     PlayASongFragment playASong;
     PlayAlbumFragment playAlbum;
     MediaPlayer mediaPlayer;
@@ -57,45 +62,50 @@ public class PlayMusicActivity extends AppCompatActivity {
         getDataFromIntent();
         init();
         eventClick();
+
     }
 
     private void eventClick() {
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(adapterMusic.getItem(1) != null){
-                    if(songs.size() > 0){
-                        playASong.setCircleImageView(songs.get(0).getImageURL());
-                        handler.removeCallbacks(this);
-                    }else{
-                        handler.postDelayed(this, 500);
-                        //500s lai kiem tra url va set hinh anh neu fail
-                    }
-                }
-            }
-        }, 500);
         imgPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.pause();
-                    imgPlay.setImageResource(R.drawable.iconpause);
+//                if (mediaPlayer.isPlaying()) {
+//                    mediaPlayer.pause();
+//                    imgPlay.setImageResource(R.drawable.iconpause);
+//                }
+
+                try {
+                    mediaPlayer.setDataSource(songs.get(0).getMp3URL());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                mediaPlayer.start();
+                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+                eTime = mediaPlayer.getDuration();
+                sTime = mediaPlayer.getCurrentPosition();
+                txtTotalSongTime.setText(sdf.format(eTime));
+                if(oTime == 0){
+                    skSongPlayThrough.setMax(eTime);
+                    oTime =1;
+                }
+
+                txtSongTime.setText(sdf.format(sTime));
+                skSongPlayThrough.setProgress(sTime);
+                hdlr.postDelayed(UpdateSongTime, 100);
             }
         });
         //Event for button repeat
         imgRepeat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isRepeated == false){
-                    if(isRandom == true){
+                if (isRepeated == false) {
+                    if (isRandom == true) {
                         isRandom = false;
                         imgRandom.setImageResource(R.drawable.iconsuffle);
                     }
                     imgRepeat.setImageResource(R.drawable.iconsyned);
                     isRepeated = true;
-                }else{
+                } else {
                     imgRepeat.setImageResource(R.drawable.iconrepeat);
                     isRepeated = false;
                 }
@@ -105,14 +115,14 @@ public class PlayMusicActivity extends AppCompatActivity {
         imgRandom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isRandom == false){
-                    if(isRepeated == true){
+                if (isRandom == false) {
+                    if (isRepeated == true) {
                         isRepeated = false;
                         imgRepeat.setImageResource(R.drawable.iconrepeat);
                     }
                     imgRandom.setImageResource(R.drawable.iconshuffled);
                     isRandom = true;
-                }else{
+                } else {
                     imgRandom.setImageResource(R.drawable.iconsuffle);
                     isRandom = false;
                 }
@@ -120,8 +130,9 @@ public class PlayMusicActivity extends AppCompatActivity {
         });
         //Event for sk bar (play through bar)
         skSongPlayThrough.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
 
@@ -131,38 +142,41 @@ public class PlayMusicActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                mediaPlayer.seekTo(seekBar.getProgress());
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                mediaPlayer.seekTo(progress);
+                skSongPlayThrough.setProgress(progress);
             }
         });
+
         //Event for next
         imgNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(songs.size() > 0){
-                    if(mediaPlayer.isPlaying() || mediaPlayer != null){
+                if (songs.size() > 0) {
+                    if (mediaPlayer.isPlaying() || mediaPlayer != null) {
                         mediaPlayer.stop();
                         mediaPlayer.release();
                         mediaPlayer = null;
                     }
-                    if(position < songs.size()){
+                    if (position < songs.size()) {
                         imgPlay.setImageResource(R.drawable.iconpause);
-                        position ++;
-                        if(isRepeated){
-                            if(position == 0){
+                        position++;
+                        if (isRepeated) {
+                            if (position == 0) {
                                 position = songs.size();
                             }
                             position -= 1;
                         }
-                        if(isRandom){
+                        if (isRandom) {
                             Random random = new Random();
                             int index = random.nextInt(songs.size());
-                            if(index == position){
-                                index ++;
+                            if (index == position) {
+                                index++;
                             }
                             position = index;
                         }
-                        if(position > songs.size() - 1){
+                        if (position > songs.size() - 1) {
                             position = 0;
                         }
                         playDaSong(position);
@@ -184,26 +198,26 @@ public class PlayMusicActivity extends AppCompatActivity {
         imgPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(songs.size() > 0){
-                    if(mediaPlayer.isPlaying() || mediaPlayer != null){
+                if (songs.size() > 0) {
+                    if (mediaPlayer.isPlaying() || mediaPlayer != null) {
                         mediaPlayer.stop();
                         mediaPlayer.release();
                         mediaPlayer = null;
                     }
-                    if(position < songs.size()){
+                    if (position < songs.size()) {
                         imgPlay.setImageResource(R.drawable.iconpause);
-                        position --;
-                        if(position < 0){
+                        position--;
+                        if (position < 0) {
                             position = songs.size() - 1;
                         }
-                        if(isRepeated){
+                        if (isRepeated) {
                             position += 1;
                         }
-                        if(isRandom){
+                        if (isRandom) {
                             Random random = new Random();
                             int index = random.nextInt(songs.size());
-                            if(index == position){
-                                index ++;
+                            if (index == position) {
+                                index++;
                             }
                             position = index;
                         }
@@ -222,20 +236,36 @@ public class PlayMusicActivity extends AppCompatActivity {
                 }, 5000);
             }
         });
+        playMToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                mediaPlayer.stop();
+                songs.clear();
+            }
+        });
+        playMToolBar.setTitleTextColor(Color.WHITE);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                //Dung va khoi tao lai tranh van de xay ra khi xu ly bat dong bo
+                mediaPlayer.stop();
+                mediaPlayer.reset();
+            }
+        });
     }
 
     private void getDataFromIntent() {
         Intent intent = getIntent();
         songs.clear();
-        if(intent != null){
+        if (intent != null) {
             intent.getExtras();
-            if(intent.hasExtra("song")){
+            if (intent.hasExtra("song")) {
                 Song song = (Song) intent.getExtras().getSerializable("song");
                 songs.add(song);
             }
-            if(intent.hasExtra("album")){
+            if (intent.hasExtra("album")) {
                 ArrayList<Song> album = (ArrayList<Song>) intent.getExtras().getSerializable("album");
-                Log.d("zxc", album.toString() + "");
                 songs.addAll(album);
             }
         }
@@ -252,27 +282,27 @@ public class PlayMusicActivity extends AppCompatActivity {
         imgRandom = findViewById(R.id.imageBSuffle);
         imgRepeat = findViewById(R.id.imageBRepeat);
         viewPagerPlayM = findViewById(R.id.playMViewPager);
-        //This two belows is weir, consider vids 54,55
-        playMToolBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                mediaPlayer.stop();
-                songs.clear();
-            }
-        });
-        playMToolBar.setTitleTextColor(Color.WHITE);
-
-        adapterMusic = new ViewPagerPlaylistAdapter(getSupportFragmentManager());
-        adapterMusic.addFragment(playAlbum);
-        adapterMusic.addFragment(playASong);
+        playASong = new PlayASongFragment();
+        playAlbum = new PlayAlbumFragment();
+        adapterMusic = new ViewPagerPlaylistAdapter(this,songs);
         viewPagerPlayM.setAdapter(adapterMusic);
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        //This two belows is weir, consider vids 54,55
 
-        //Play immediately after clicking
-        playASong = (PlayASongFragment) adapterMusic.getItem(1);
-        playDaSong(0);
     }
-
+    private static int oTime =0, sTime =0, eTime =0, fTime = 5000, bTime = 5000;
+    private Handler hdlr = new Handler();
+    private Runnable UpdateSongTime = new Runnable() {
+        @Override
+        public void run() {
+            sTime = mediaPlayer.getCurrentPosition();
+            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+            txtSongTime.setText(sdf.format(sTime));
+            skSongPlayThrough.setProgress(sTime);
+            hdlr.postDelayed(this, 100);
+        }
+    };
     class PlayMp3 extends AsyncTask<String, Void, String> {
 
         @Override
@@ -281,43 +311,33 @@ public class PlayMusicActivity extends AppCompatActivity {
         }
 
         @Override
+        public int hashCode() {
+            return super.hashCode();
+        }
+
+        @Override
         protected void onPostExecute(String song) {
             super.onPostExecute(song);
-            try{
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        //Dung va khoi tao lai tranh van de xay ra khi xu ly bat dong bo
-                        mediaPlayer.stop();
-                        mediaPlayer.reset();
-                    }
-                });
+            try {
                 mediaPlayer.setDataSource(song);
                 mediaPlayer.prepare(); //Must have this
-            }catch (IOException e){
+                mediaPlayer.start();
+//
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            mediaPlayer.start();
-            TimeSong();
         }
     }
 
-    private void TimeSong() {
-        SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
-        txtTotalSongTime.setText(sdf.format(mediaPlayer.getDuration()));
-        skSongPlayThrough.setMax(mediaPlayer.getDuration());
-    }
-
-    public void playDaSong(int position){
-        if(songs.size() > 0){
-            Song daSong = songs.get(position);
-            playASong.setCircleImageView(daSong.getImageURL());
-            getSupportActionBar().setTitle(daSong.getSongName());
-            new PlayMp3().execute(daSong.getMp3URL());
-            imgPlay.setImageResource(R.drawable.iconpause);
-        }
+    public void playDaSong(int position) {
+//        playASong = (PlayASongFragment) adapterMusic.getItem(0);
+//        if (songs.size() > 0) {
+//            Song daSong = songs.get(position);
+//            playASong.setCircleImageView(daSong.getImageURL());
+//            getSupportActionBar().setTitle(daSong.getSongName());
+//            new PlayMp3().execute(daSong.getMp3URL());
+//            imgPlay.setImageResource(R.drawable.iconpause);
+//        }
     }
 }
