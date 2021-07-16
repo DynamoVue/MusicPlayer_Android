@@ -45,9 +45,6 @@ public class CategoryByThemeActivity extends AppCompatActivity implements Fireba
                 finish();
             }
         });
-        Intent intent = getIntent();
-
-        idTheme = intent.hasExtra("idTheme") ? intent.getStringExtra("idTheme") : "1";
         GetIntent();
         init();
         GetData();
@@ -71,8 +68,8 @@ public class CategoryByThemeActivity extends AppCompatActivity implements Fireba
     }
 
     private void GetData(){
-        Query connectedPlaylist = DATABASE_REFERENCE_CATEGORY.child("idTheme");
-        connectedPlaylist.addValueEventListener(new ValueEventListener() {
+//        Query connectedPlaylist = DATABASE_REFERENCE_CATEGORY.child("idTheme");
+        DATABASE_REFERENCE_CATEGORY.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 categories = new ArrayList<>();

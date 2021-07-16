@@ -47,36 +47,11 @@ public class CategoryThemeFragment extends Fragment implements FirebaseReference
             }
         });
         GetData();
-//        GetData1();
         return view;
     }
-//    private void GetData1(){
-//        DATABASE_REFERENCE_CATEGORY.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                categories = new ArrayList<>();
-//                for(DataSnapshot item : dataSnapshot.getChildren()){
-//                    Categories category = item.getValue(Categories.class);
-//                    category.setIdCategory(dataSnapshot.getKey());
-//                    categories.add(category);
-//                }
-//
-//                LinearLayout linearLayout = new LinearLayout(getActivity());
-//                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-//
-//                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(580, 250);
-//                layoutParams.setMargins(10,20,10,30);
-//
-//
-//                horizontalScrollView.addView(linearLayout);
-//            }
-//
-//            @Override
-//            public void onCancelled( DatabaseError error) {
-//
-//            }
-//        });
-//    }
+    private void GetData1(){
+
+    }
     private void GetData(){
         DATABASE_REFERENCE_THEME.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -88,39 +63,55 @@ public class CategoryThemeFragment extends Fragment implements FirebaseReference
                     themes.add(theme);
                 }
 
-                LinearLayout linearLayout = new LinearLayout(getActivity());
-                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                DATABASE_REFERENCE_CATEGORY.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        categories = new ArrayList<>();
+                        for(DataSnapshot item : dataSnapshot.getChildren()){
+                            Categories category = item.getValue(Categories.class);
+                            category.setIdCategory(dataSnapshot.getKey());
+                            categories.add(category);
+                        }
 
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(580, 250);
-                layoutParams.setMargins(10,20,10,30);
+                        LinearLayout linearLayout = new LinearLayout(getActivity());
+                        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-                for (int i = 0; i < themes.size(); i++) {
-                    CardView cardView = new CardView(getActivity());
-                    cardView.setRadius(10);
-                    ImageView imageView = new ImageView(getActivity());
-                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                    if(themes.get(i).getImageTheme() != null){
-                        Picasso.get().load(themes.get(i).getImageTheme()).into(imageView);
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(580, 250);
+                        layoutParams.setMargins(10,20,10,30);
+
+                        for (int i = 0; i < themes.size(); i++) {
+                            CardView cardView = new CardView(getActivity());
+                            cardView.setRadius(10);
+                            ImageView imageView = new ImageView(getActivity());
+                            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                            if(themes.get(i).getImageTheme() != null){
+                                Picasso.get().load(themes.get(i).getImageTheme()).into(imageView);
+                            }
+                            cardView.setLayoutParams(layoutParams);
+                            cardView.addView(imageView);
+                            linearLayout.addView(cardView);
+                        }
+
+                        for (int j = 0; j < themes.size(); j++) {
+                            CardView cardView = new CardView(getActivity());
+                            cardView.setRadius(10);
+                            ImageView imageView = new ImageView(getActivity());
+                            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                            if(categories.get(j).getImageCategory() != null){
+                                Picasso.get().load(categories.get(j).getImageCategory()).into(imageView);
+                            }
+                            cardView.setLayoutParams(layoutParams);
+                            cardView.addView(imageView);
+                            linearLayout.addView(cardView);
+                        }
+                        horizontalScrollView.addView(linearLayout);
                     }
-                    cardView.setLayoutParams(layoutParams);
-                    cardView.addView(imageView);
-                    linearLayout.addView(cardView);
-                }
 
-//                for (int j = 0; j < themes.size(); j++) {
-//                    CardView cardView = new CardView(getActivity());
-//                    cardView.setRadius(10);
-//                    ImageView imageView = new ImageView(getActivity());
-//                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-//                    if(categories.get(j).getImageCategory() != null){
-//                        Picasso.get().load(categories.get(j).getImageCategory()).into(imageView);
-//                    }
-//                    cardView.setLayoutParams(layoutParams);
-//                    cardView.addView(imageView);
-//                    linearLayout.addView(cardView);
-//                }
-            horizontalScrollView.addView(linearLayout);
+                    @Override
+                    public void onCancelled( DatabaseError error) {
 
+                    }
+                });
 
             }
 
