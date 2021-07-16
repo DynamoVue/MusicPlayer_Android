@@ -111,12 +111,9 @@
         android:id="@+id/favContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-<<<<<<< HEAD
-=======
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
->>>>>>> a2974ca6f5a1946b68138c407b95de2c91553508
         <FrameLayout
             android:layout_centerVertical="true"
             android:id="@+id/roundedFavorite"
@@ -136,13 +133,11 @@
                 android:src="@drawable/ic_heart"/>
         </FrameLayout>
         <TextView
-<<<<<<< HEAD
             android:textSize="18sp"
             android:textColor="@color/dark"
             android:text="Favorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-=======
             android:id="@+id/favText"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/roundedFavorite"
