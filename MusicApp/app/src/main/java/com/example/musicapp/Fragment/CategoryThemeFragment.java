@@ -49,9 +49,7 @@ public class CategoryThemeFragment extends Fragment implements FirebaseReference
         GetData();
         return view;
     }
-    private void GetData1(){
 
-    }
     private void GetData(){
         DATABASE_REFERENCE_THEME.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
