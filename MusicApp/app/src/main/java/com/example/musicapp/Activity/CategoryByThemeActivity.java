@@ -25,7 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class CategoryByThemeActivity extends AppCompatActivity implements FirebaseReference {
+public class CategoryByThemeActivity extends AppCompatActivity implements FirebaseReference{
     private Theme theme;
     private ImageView btnBack;
     RecyclerView recyclerViewTheLoaiTheoChuDe;

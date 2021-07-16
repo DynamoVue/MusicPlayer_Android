@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.musicapp.Activity.ListAlbumActivity;
+import com.example.musicapp.Activity.ListOfAlbum;
 import com.example.musicapp.Adapter.AlbumAdapter;
 import com.example.musicapp.Entity.Album;
 import com.example.musicapp.R;
@@ -90,7 +90,7 @@ public class AlbumHotFragment extends Fragment implements FirebaseReference {
         tvMoreAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ListAlbumActivity.class);
+                Intent intent = new Intent(getActivity(), ListOfAlbum.class);
                 startActivity(intent);
             }
         });
