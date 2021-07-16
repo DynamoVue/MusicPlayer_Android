@@ -2,7 +2,6 @@ package com.example.musicapp.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.NoCopySpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +61,7 @@ public class ListPlaylistFragment extends Fragment implements FirebaseReference 
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Intent intent = new Intent(getActivity(), PlaylistActivity.class);
-                        intent.putExtra("playlistId", playlists.get(position).getId());
+                        intent.putExtra("item_playlist", playlists.get(position));
                         startActivity(intent);
                     }
                 });

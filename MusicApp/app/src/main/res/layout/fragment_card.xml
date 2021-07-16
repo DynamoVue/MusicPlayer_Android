@@ -75,10 +75,9 @@
             </LinearLayout>
 
             <ImageView
-                android:padding="10dp"
                 android:id="@+id/cardItemMore"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
                 android:src="@drawable/ic_more"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"

@@ -1,6 +1,5 @@
 package com.example.musicapp.Fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,9 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
 import com.example.musicapp.Activity.AuthenticationActivity;
@@ -28,27 +25,22 @@ import com.example.musicapp.Activity.PlaylistActivity;
 import com.example.musicapp.Animation.ItemAnimation;
 import com.example.musicapp.Entity.Playlist;
 import com.example.musicapp.Entity.Song;
-import com.example.musicapp.MainActivity;
 import com.example.musicapp.R;
 import com.example.musicapp.Service.FirebaseReference;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.squareup.picasso.Picasso;
 
 import org.imaginativeworld.whynotimagecarousel.ImageCarousel;
 import org.imaginativeworld.whynotimagecarousel.listener.CarouselListener;
-import org.imaginativeworld.whynotimagecarousel.listener.CarouselOnScrollListener;
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -71,8 +63,6 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
     int _currentItem = 0;
 
     private void init() {
-        user = FirebaseAuth.getInstance().getCurrentUser();
-
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
@@ -81,8 +71,6 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                     userEmail.setText(user.getDisplayName());
                     Picasso.get().load(user.getPhotoUrl()).fit().centerCrop().into(userAvatar);
                     btnLogin.setText("Logout");
-                    getFavoriteSongs();
-                    getRecentPlayed();
                 }
 
                 if (user == null) {
@@ -144,7 +132,6 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                 startActivityForResult(intent, MY_REQUEST_CODE);
             }
         });
-
         init();
         return view;
     }
@@ -181,23 +168,18 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                 List<Playlist> playlists = new ArrayList<>();
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    for (DataSnapshot dataSnapshotChildren : snapshot.getChildren()) {
-                        String playlistName = (String)dataSnapshotChildren.child("playlistName").getValue();
-                        String playlistUrl = (String)dataSnapshotChildren.child("playlistUrl").getValue();
-                        String id = (String)dataSnapshotChildren.child("id").getValue();
+                        for (DataSnapshot dataSnapshotChildren : snapshot.getChildren()) {
+                            String playlistName = (String)dataSnapshotChildren.child("playlistName").getValue();
+                            String playlistUrl = (String)dataSnapshotChildren.child("playlistUrl").getValue();
+                            String id = (String)dataSnapshotChildren.child("id").getValue();
 
-                        playlists.add(new Playlist(id, playlistName, playlistUrl, new ArrayList<>()));
-                        Map<String, String> headers = new HashMap<>();
-                        headers.put("caption", playlistName);
-                        headers.put("id", id);
-
-                        list.add(new CarouselItem(playlistUrl, playlistName, headers));
-                    }
+                            playlists.add(new Playlist(id, playlistName, playlistUrl, new ArrayList<>()));
+                            list.add(new CarouselItem(playlistUrl, playlistName));
+                        }
                 };
 
                 recentPlayedCarousel.registerLifecycle(getLifecycle());
                 recentPlayedCarousel.setData(list);
-
                 recentPlayedCarousel.setCarouselListener(new CarouselListener() {
                     @Override
                     public ViewBinding onCreateViewHolder(LayoutInflater layoutInflater, ViewGroup viewGroup) {
@@ -247,6 +229,9 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
 
             }
         });
+
+        init();
+        return view;
     }
 
     @Override

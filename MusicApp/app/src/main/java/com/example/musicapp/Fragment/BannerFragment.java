@@ -54,7 +54,7 @@ public class BannerFragment extends Fragment implements FirebaseReference {
                     public void run() {
                         currentItem = viewPager.getCurrentItem();
                         currentItem++;
-                        if (currentItem >= viewPager.getAdapter().getCount()) {
+                        if (currentItem > viewPager.getAdapter().getCount()) {
                             currentItem = 0;
                         }
                         viewPager.setCurrentItem(currentItem, true);
