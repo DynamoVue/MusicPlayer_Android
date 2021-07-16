@@ -1,5 +1,6 @@
 package com.example.musicapp.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.musicapp.Activity.ListAlbumActivity;
 import com.example.musicapp.Adapter.AlbumAdapter;
 import com.example.musicapp.Entity.Album;
 import com.example.musicapp.R;
@@ -85,6 +87,13 @@ public class AlbumHotFragment extends Fragment implements FirebaseReference {
         view = inflater.inflate(R.layout.fragment_album_hot, container, false);
         recyclerViewAlbum = view.findViewById(R.id.rvAlbum);
         tvMoreAlbum = view.findViewById(R.id.tvMore);
+        tvMoreAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ListAlbumActivity.class);
+                startActivity(intent);
+            }
+        });
         getData();
         return view;
 

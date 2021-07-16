@@ -31,15 +31,14 @@ public class ThemeScreenActivity extends AppCompatActivity implements FirebaseRe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_theme_screen_activity);
-        btnBack = (ImageView) findViewById(R.id.backButton);
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
         init();
         getData();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private void init(){

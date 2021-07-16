@@ -38,18 +38,16 @@ public class CategoryByThemeActivity extends AppCompatActivity implements Fireba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_by_theme);
-        btnBack = (ImageView) findViewById(R.id.backButton);
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
         GetIntent();
         init();
         GetData();
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
 
     private void init(){
