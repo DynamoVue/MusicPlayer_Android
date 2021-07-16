@@ -161,7 +161,7 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
         });
     }
 
-    private void getRecentPlayed() {
+    private View getRecentPlayed() {
         DATABASE_REFERENCE_PLAYLIST.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {

@@ -56,11 +56,11 @@ public class PlayAlbumFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_play_album, container, false);
         recyclerViewPlayMusic = view.findViewById(R.id.recyclerVPlayAlbum);
-        if(PlayMusicActivity.songs.size() > 0){
-            playMusicAdapter = new PlayMusicAdapter(getActivity(), PlayMusicActivity.songs);
-            recyclerViewPlayMusic.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerViewPlayMusic.setAdapter(playMusicAdapter);
-        }
+//        if(PlayMusicActivity.songs.size() > 0){
+//            playMusicAdapter = new PlayMusicAdapter(getActivity(), PlayMusicActivity.songs);
+//            recyclerViewPlayMusic.setLayoutManager(new LinearLayoutManager(getActivity()));
+//            recyclerViewPlayMusic.setAdapter(playMusicAdapter);
+//        }
 
         return view;
     }
