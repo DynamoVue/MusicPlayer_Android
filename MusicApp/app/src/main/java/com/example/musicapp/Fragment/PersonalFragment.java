@@ -232,7 +232,7 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
         });
 
         init();
-        return view;
+//        return view;
     }
 
     @Override
