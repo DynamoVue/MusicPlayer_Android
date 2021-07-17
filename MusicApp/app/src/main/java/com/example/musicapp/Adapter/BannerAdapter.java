@@ -1,14 +1,17 @@
 package com.example.musicapp.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.example.musicapp.Activity.PlaylistActivity;
 import com.example.musicapp.Entity.Song;
 import com.example.musicapp.R;
 import com.squareup.picasso.Picasso;
@@ -47,6 +50,14 @@ public class BannerAdapter extends PagerAdapter {
         txtTitleSongBanner.setText(songs.get(position).getSongName());
         txtContent.setText(songs.get(position).getSingers());
 
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, PlaylistActivity.class);
+                intent.putExtra("banner",songs.get(position));
+                context.startActivity(intent);
+            }
+        });
         container.addView(view);
         return view;
     }
