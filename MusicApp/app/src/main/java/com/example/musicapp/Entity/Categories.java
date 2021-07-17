@@ -2,7 +2,9 @@ package com.example.musicapp.Entity;
 
 import com.example.musicapp.Fragment.CategoryThemeFragment;
 
-public class Categories {
+import java.io.Serializable;
+
+public class Categories implements Serializable {
     private String idCategory;
     private String idTheme;
     private String nameCategory;

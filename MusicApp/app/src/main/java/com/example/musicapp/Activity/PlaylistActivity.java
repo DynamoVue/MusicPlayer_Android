@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicapp.Adapter.PlaylistAdapter;
+import com.example.musicapp.Entity.Album;
 import com.example.musicapp.Entity.Playlist;
 import com.example.musicapp.Entity.Song;
 import com.example.musicapp.R;
@@ -52,7 +53,7 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
     Toolbar toolbar;
     Button btnShuffle;
     List<Song> songs;
-
+    Album album;
     @Override
     public void onBackPressed() {
         finish();
@@ -108,6 +109,9 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
                 playlistAdapter = new PlaylistAdapter(songs, this, this);
                 playlistView.setLayoutManager(new LinearLayoutManager(this));
                 playlistView.setAdapter(playlistAdapter);
+                if(intent.hasExtra("album1")){
+                    album = (Album) intent.getSerializableExtra("album1");
+                }
             }
         }
     }
@@ -154,6 +158,29 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
             });
         }
     }
+//    private void getDataAlbum(Playlist playlist){
+//
+//        DATABASE_REFERENCE_MUSIC.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot snapshot) {
+//                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                    String id = (String)dataSnapshot.child("id").getValue();
+//                    int index = songIds.indexOf(id);
+//                    if (index > -1) {
+//                        Song song = dataSnapshot.getValue(Song.class);
+//                        songs.add(song);
+//                    }
+//                }
+//
+//                renderSongsInRecyclerView(songs);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//
+//            }
+//        });
+//    }
 
     private void getData() {
         Query connectedPlaylist = DATABASE_REFERENCE_PLAYLIST.child("2");

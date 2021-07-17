@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.musicapp.Activity.CategoryByThemeActivity;
 import com.example.musicapp.Activity.ThemeScreenActivity;
 import com.example.musicapp.Entity.Categories;
 import com.example.musicapp.Entity.Theme;
@@ -88,6 +89,15 @@ public class CategoryThemeFragment extends Fragment implements FirebaseReference
                             cardView.setLayoutParams(layoutParams);
                             cardView.addView(imageView);
                             linearLayout.addView(cardView);
+                            int finalI = i;
+                            imageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(getActivity(), CategoryByThemeActivity.class);
+                                    intent.putExtra("chude",themes.get(finalI));
+                                    startActivity(intent);
+                                }
+                            });
                         }
 
                         for (int j = 0; j < themes.size(); j++) {
