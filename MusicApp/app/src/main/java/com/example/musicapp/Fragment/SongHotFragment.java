@@ -50,6 +50,9 @@ public class SongHotFragment extends Fragment implements FirebaseReference {
                 for(DataSnapshot ds: snapshot.getChildren()){
                     Song song = ds.getValue(Song.class);
                     songs.add(song);
+                    if(songs.size()>=5){
+                        break;
+                    }
                 }
                 Collections.sort(songs, new Comparator<Song>() {
                     @Override
