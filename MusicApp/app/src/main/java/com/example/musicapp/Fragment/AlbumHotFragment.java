@@ -91,7 +91,7 @@ public class AlbumHotFragment extends Fragment implements FirebaseReference {
     }
 
     private void getData() {
-        Log.d("TEST ALBUM", "Test before");
+
         DATABASE_REFERENCE_ALBUM.addValueEventListener(new ValueEventListener() {
             List<Album> albums = new ArrayList<>();
             @Override
