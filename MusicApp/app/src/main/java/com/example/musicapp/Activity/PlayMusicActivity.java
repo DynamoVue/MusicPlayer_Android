@@ -58,6 +58,12 @@ public class PlayMusicActivity extends AppCompatActivity {
         getDataFromIntent();
         init();
         eventClick();
+
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        new PlayMp3().execute(songs.get(0).getMp3URL());
+        hdlr.postDelayed(UpdateSongTime, 50);
+        imgPlay.setImageResource(R.drawable.iconpause);
     }
     private void eventClick() {
         imgPlay.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +73,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                     mediaPlayer = new MediaPlayer();
                     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     new PlayMp3().execute(songs.get(0).getMp3URL());
-                    hdlr.postDelayed(UpdateSongTime, 50);
+//                    hdlr.postDelayed(UpdateSongTime, 50);
                     imgPlay.setImageResource(R.drawable.iconpause);
                 } else  if (mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
@@ -206,6 +212,9 @@ public class PlayMusicActivity extends AppCompatActivity {
                                 index++;
                             }
                             position = index;
+                        }
+                        if (position > songs.size() - 1) {
+                            position = 0;
                         }
                         playDaSong(position,false);
                     }
