@@ -76,7 +76,7 @@ public class CategoryThemeFragment extends Fragment implements FirebaseReference
                         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
 
                         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(580, 250);
-                        layoutParams.setMargins(10,20,10,30);
+                        layoutParams.setMargins(10,20,10,20);
 
                         for (int i = 0; i < themes.size(); i++) {
                             CardView cardView = new CardView(getActivity());
@@ -130,5 +130,7 @@ public class CategoryThemeFragment extends Fragment implements FirebaseReference
         });
 
     }
+
+
 
 }
