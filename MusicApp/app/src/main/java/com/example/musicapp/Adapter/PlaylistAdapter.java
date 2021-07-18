@@ -67,9 +67,10 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
     FirebaseUser user;
     private FirebaseAuth.AuthStateListener authListener;
 
-    public PlaylistAdapter(List<Song> songs, Context mContext, PlaylistActivity fragment) {
+    public PlaylistAdapter(List<Song> songs, Context mContext, PlaylistActivity fragment, String playlistId) {
         this.songs = songs;
         this.mContext = mContext;
+        this.playlistId = playlistId;
         this.fragment = fragment;
     }
 
@@ -295,11 +296,14 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
                                 }
 
                                 if (!alreadyContained) {
-                                    Map<String, List<Song>> users = new HashMap<>();
                                     favorSongs.add(songDisplayMore);
-                                    users.put("favoriteSongs", favorSongs);
+                                    Map<String, Object> favorSongsMapping = new HashMap<>();
 
-                                    playlistRef.setValue(users);
+                                    for (int i = 0; i < favorSongs.size(); i++) {
+                                        favorSongsMapping.put(i + "", favorSongs.get(i));
+                                    }
+
+                                    playlistRef.child("favoriteSongs").updateChildren(favorSongsMapping);
                                 }
 
                                 Toast.makeText(v.getContext(), "Add " + songDisplayMore.getSongName() + " Successful!", Toast.LENGTH_LONG).show();
