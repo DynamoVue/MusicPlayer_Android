@@ -16,6 +16,7 @@ public class Song implements Serializable, Comparable {
     private String themeSong;
     private String lyrics;
     private String content;
+    private int numberOfLikes;
 
 
     public String getSinger() {
@@ -96,6 +97,14 @@ public class Song implements Serializable, Comparable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public int getNumberOfLikes() {
+        return numberOfLikes;
+    }
+
+    public void setNumberOfLikes(int numberOfLikes) {
+        this.numberOfLikes = numberOfLikes;
     }
 
     public Bundle putDataToBundle() {
