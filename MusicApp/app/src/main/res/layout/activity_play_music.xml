@@ -6,7 +6,7 @@
     tools:context=".Activity.PlayMusicActivity"
     android:orientation="vertical"
     android:weightSum="10"
-    android:background="#c3c7ce"
+    android:background="@color/dark"
     >
 
     <!-- TODO: Update blank fragment layout -->
@@ -14,7 +14,6 @@
         android:id="@+id/playMToolBar"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:background="@color/com_facebook_blue"
         />
 
     <androidx.viewpager2.widget.ViewPager2
@@ -42,7 +41,7 @@
                 android:gravity="center"
                 android:layout_weight="0.5"
                 android:id="@+id/songTime"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
@@ -62,69 +61,75 @@
                 android:textSize="16sp"
                 android:text="3:47"
                 android:gravity="center"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:layout_weight="0.5"
                 />
         </LinearLayout>
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="10"
+            android:layout_height="50dp"
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:gravity="center"
             >
             <ImageButton
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                android:layout_alignParentLeft="true"
                 android:id="@+id/imageBSuffle"
                 android:src="@drawable/iconsuffle"
                 android:scaleType="fitXY"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:background="@null"
-                android:layout_marginRight="15dp"
                 />
             <ImageButton
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_toLeftOf="@+id/imageBPlay"
                 android:id="@+id/imageBPrev"
                 android:src="@drawable/iconpreview"
                 android:scaleType="fitXY"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:background="@null"
-                android:layout_marginRight="15dp"
                 />
             <ImageButton
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
                 android:id="@+id/imageBPlay"
                 android:src="@drawable/iconplay"
                 android:scaleType="fitXY"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:background="@null"
+                android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 />
             <ImageButton
+                android:layout_toRightOf="@+id/imageBPlay"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
                 android:id="@+id/imageBNext"
                 android:src="@drawable/iconnext"
                 android:scaleType="fitXY"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:background="@null"
-                android:layout_marginRight="15dp"
                 />
+
             <ImageButton
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
                 android:id="@+id/imageBRepeat"
-                android:src="@drawable/iconrepeat"
-                android:scaleType="fitXY"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@null"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_marginRight="15dp"
-                />
+                android:background="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/iconrepeat" />
 
-
-
-
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
 

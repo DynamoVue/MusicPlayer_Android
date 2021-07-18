@@ -8,6 +8,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -282,6 +283,8 @@ public class PlayMusicActivity extends AppCompatActivity {
         viewPagerPlayM.setUserInputEnabled(false);
         //This two belows is weir, consider vids 54,55
 
+        skSongPlayThrough.setProgressBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+
     }
     private static int oTime =0, sTime =0, eTime =0, fTime = 5000, bTime = 5000;
     private Handler hdlr = new Handler();
@@ -335,7 +338,7 @@ public class PlayMusicActivity extends AppCompatActivity {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             Song daSong = songs.get(position);
-            //playASong.setCircleImageView(daSong.getImageURL());
+//            playASong.setCircleImageView(daSong.getImageURL());
             getSupportActionBar().setTitle(daSong.getSongName());
             new PlayMp3().execute(daSong.getMp3URL());
             imgPlay.setImageResource(R.drawable.iconpause);
