@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+    <RelativeLayout android:layout_height="wrap_content" android:layout_width="match_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView android:layout_height="80dp" android:layout_width="80dp" android:scaleType="fitXY" android:layout_margin="3dp" android:id="@+id/imageViewSearchItem"/>
+
+    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/tvSearchSongName" android:ellipsize="end" android:singleLine="true" android:maxWidth="250dp" android:layout_marginTop="7dp" android:layout_marginLeft="5dp" android:layout_toRightOf="@id/imageViewSearchItem" android:textColor="@color/black" android:text="Song Name here" android:textSize="18sp"/>
+
+    <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/tvSearchArtistName" android:ellipsize="end" android:singleLine="true" android:maxWidth="250dp" android:layout_marginTop="7dp" android:layout_marginLeft="5dp" android:layout_toRightOf="@id/imageViewSearchItem" android:textColor="#6e6d6d" android:text="Artist Name here" android:textSize="15sp" android:layout_below="@id/tvSearchSongName"/>
+
+    <ImageView android:layout_height="30dp" android:layout_width="30dp" android:id="@+id/imageViewSearchLikes" android:layout_alignParentRight="true" android:layout_centerVertical="true" android:layout_marginRight="10dp" android:src="@drawable/iconlove"/>
+
+</RelativeLayout>
