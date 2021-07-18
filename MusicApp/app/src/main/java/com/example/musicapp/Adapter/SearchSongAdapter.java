@@ -16,6 +16,7 @@ import com.example.musicapp.Activity.AuthenticationActivity;
 import com.example.musicapp.Activity.PlayMusicActivity;
 import com.example.musicapp.Entity.Song;
 import com.example.musicapp.R;
+import com.example.musicapp.Service.FirebaseReference;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -109,7 +110,7 @@ public class SearchSongAdapter extends RecyclerView.Adapter<SearchSongAdapter.Vi
                         return;
                     }
 
-                    DatabaseReference playlistRef = DATABASE_REFERENCE_USERS.child(user.getUid());
+                    DatabaseReference playlistRef = FirebaseReference.DATABASE_REFERENCE_USERS.child(user.getUid());
 
                     playlistRef.child("favoriteSongs").addListenerForSingleValueEvent(new ValueEventListener() {
                         ArrayList<Song> favorSongs = new ArrayList<>();

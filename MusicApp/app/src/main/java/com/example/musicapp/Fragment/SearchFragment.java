@@ -42,7 +42,7 @@ public class SearchFragment extends Fragment {
         toolbarSearchSong = view.findViewById(R.id.toolBarSearchSong);
         recyclerViewSearchSong = view.findViewById(R.id.recyclerVSearchSong);
         txtNoData = view.findViewById(R.id.tvNoDataSearchSong);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbarSearchSong);
+//        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbarSearchSong);
         toolbarSearchSong.setTitle("");
 
         setHasOptionsMenu(true);
@@ -73,7 +73,7 @@ public class SearchFragment extends Fragment {
 
     private void searchSong(String keyword){
         ArrayList<Song> songs = new ArrayList<>();
-        DATABASE_REFERENCE_MUSIC.addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseReference.DATABASE_REFERENCE_MUSIC.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
