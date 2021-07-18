@@ -264,6 +264,10 @@ public class PlayMusicActivity extends AppCompatActivity {
                 ArrayList<Song> album = (ArrayList<Song>) intent.getExtras().getSerializable("album");
                 songs.addAll(album);
             }
+            if (intent.hasExtra("banner")){
+                Song song = (Song) intent.getExtras().getSerializable("banner");
+                songs.add(song);
+            }
         }
     }
 

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.example.musicapp.Activity.PlayMusicActivity;
 import com.example.musicapp.Activity.PlaylistActivity;
 import com.example.musicapp.Entity.Song;
 import com.example.musicapp.R;
@@ -37,6 +38,7 @@ public class BannerAdapter extends PagerAdapter {
         return view == object;
     }
 
+    //set view for only one advertisement
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -50,11 +52,12 @@ public class BannerAdapter extends PagerAdapter {
         txtTitleSongBanner.setText(songs.get(position).getSongName());
         txtContent.setText(songs.get(position).getSingers());
 
+        //intent to play
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, PlaylistActivity.class);
-                intent.putExtra("banner",songs.get(position));
+                Intent intent = new Intent(context, PlayMusicActivity.class);
+                intent.putExtra("banner", songs.get(position));
                 context.startActivity(intent);
             }
         });
