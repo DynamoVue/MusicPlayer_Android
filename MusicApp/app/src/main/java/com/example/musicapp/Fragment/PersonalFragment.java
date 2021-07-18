@@ -72,13 +72,13 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                     userEmail.setText(user.getDisplayName());
                     Picasso.get().load(user.getPhotoUrl()).fit().centerCrop().into(userAvatar);
                     btnLogin.setText("Logout");
+                    getFavoriteSongs();
+                    getRecentPlayed();
                 }
 
                 if (user == null) {
                     userEmail.setText("Login");
                     btnLogin.setText("Login");
-//                    favSongsCarousel.removeAllViews();
-//                    recentPlayedCarousel.();
                 }
             }
         };
