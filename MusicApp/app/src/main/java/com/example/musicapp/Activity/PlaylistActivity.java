@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistActivity extends AppCompatActivity implements FirebaseReference {
+    String playlistId;
     PlaylistAdapter playlistAdapter;
     RecyclerView playlistView;
     ImageView playlistBanner, playlistThumbNail, backButton;
@@ -73,6 +74,9 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         btnShuffle = (Button) findViewById(R.id.btnShuffle);
 
+        Intent intent = getIntent();
+        playlistId = intent.hasExtra("playlistId") ? intent.getStringExtra("playlistId") : "1";
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +94,6 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
             }
         });
 
-     //   getData();
         dataIntent();
     }
 
@@ -106,12 +109,16 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
                 Picasso.get().load(song.getImageURL()).fit().centerCrop().into(playlistBanner);
                 songs=new ArrayList<Song>();
                 songs.add(song);
-                playlistAdapter = new PlaylistAdapter(songs, this, this);
+                playlistAdapter = new PlaylistAdapter(songs, this, this, playlistId);
                 playlistView.setLayoutManager(new LinearLayoutManager(this));
                 playlistView.setAdapter(playlistAdapter);
                 if(intent.hasExtra("album1")){
                     album = (Album) intent.getSerializableExtra("album1");
                 }
+            }
+
+            if (playlistId != "") {
+                getData();
             }
         }
     }
@@ -125,8 +132,8 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
         Picasso.get().load(playlist.getPlaylistUrl()).fit().centerCrop().into(playlistBanner);
     }
 
-    private void renderSongsInRecyclerView(List<Song> songs) {
-        playlistAdapter = new PlaylistAdapter(songs, this, this);
+    private void renderSongsInRecyclerView(List<Song> songs, String playlistId) {
+        playlistAdapter = new PlaylistAdapter(songs, this, this, playlistId);
         playlistView.setLayoutManager(new LinearLayoutManager(this));
         playlistView.setAdapter(playlistAdapter);
     }
@@ -148,7 +155,7 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
                         }
                     }
 
-                    renderSongsInRecyclerView(songs);
+                    renderSongsInRecyclerView(songs, playlist.getId());
                 }
 
                 @Override
@@ -183,8 +190,7 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
 //    }
 
     private void getData() {
-        Query connectedPlaylist = DATABASE_REFERENCE_PLAYLIST.child("2");
-//        Query playlistFilteredByIds = DATABASE_REFERENCE_MUSIC.orderByChild("id");
+        Query connectedPlaylist = DATABASE_REFERENCE_PLAYLIST.child(playlistId);
         connectedPlaylist.addListenerForSingleValueEvent(new ValueEventListener() {
             List<String> songIds;
             String playlistName, playlistUrl, id;

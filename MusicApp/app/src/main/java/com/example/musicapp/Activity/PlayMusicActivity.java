@@ -1,5 +1,6 @@
 package com.example.musicapp.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -8,6 +9,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -30,14 +32,24 @@ import com.example.musicapp.Entity.Song;
 import com.example.musicapp.Fragment.PlayASongFragment;
 import com.example.musicapp.Fragment.PlayAlbumFragment;
 import com.example.musicapp.R;
+import com.example.musicapp.Service.FirebaseReference;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class PlayMusicActivity extends AppCompatActivity {
+public class PlayMusicActivity extends AppCompatActivity implements FirebaseReference {
     private ArrayList<Song> songs = new ArrayList<>();
     private ViewPagerPlaylistAdapter adapterMusic;
     private androidx.appcompat.widget.Toolbar playMToolBar;
@@ -48,11 +60,13 @@ public class PlayMusicActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private int position = 0;
     private boolean isRepeated = false, isRandom = false, next = false;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_music);
+        user = FirebaseAuth.getInstance().getCurrentUser();
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         getDataFromIntent();
@@ -63,8 +77,48 @@ public class PlayMusicActivity extends AppCompatActivity {
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         new PlayMp3().execute(songs.get(0).getMp3URL());
         hdlr.postDelayed(UpdateSongTime, 50);
-        imgPlay.setImageResource(R.drawable.iconpause);
+        imgPlay.setImageResource(R.drawable.iconpause); }
+
+    private void addToRecentPlayedSongs(Song song) {
+        if (user != null) {
+            DatabaseReference playlistRef = DATABASE_REFERENCE_USERS.child(user.getUid());
+
+            playlistRef.child("recentPlayed").addListenerForSingleValueEvent(new ValueEventListener() {
+                ArrayList<Song> recentPlayed = new ArrayList<>();
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        recentPlayed.add((Song) dataSnapshot.getValue(Song.class));
+                    }
+
+                    boolean alreadyContained = false;
+
+                    for (int i = 0; i < recentPlayed.size(); i++) {
+                        if (recentPlayed.get(i).getId().equals(song.getId())) {
+                            alreadyContained = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyContained) {
+                        Map<String, Object> recentPlayedMapping = new HashMap<>();
+                        recentPlayed.add(song);
+                        for (int i = 0; i < recentPlayed.size(); i++) {
+                            recentPlayedMapping.put(i + "", recentPlayed.get(i));
+                        }
+
+                        playlistRef.child("recentPlayed").updateChildren(recentPlayedMapping);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
+
     private void eventClick() {
         imgPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +129,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                     new PlayMp3().execute(songs.get(0).getMp3URL());
 //                    hdlr.postDelayed(UpdateSongTime, 50);
                     imgPlay.setImageResource(R.drawable.iconpause);
-                } else  if (mediaPlayer.isPlaying()) {
+                } else if (mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
                     imgPlay.setImageResource(R.drawable.iconplay);
                 } else {
@@ -134,7 +188,7 @@ public class PlayMusicActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
-                if(fromUser){
+                if (fromUser) {
                     mediaPlayer.seekTo(progress);
                     skSongPlayThrough.setProgress(progress);
                 }
@@ -171,7 +225,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                         if (position > songs.size() - 1) {
                             position = 0;
                         }
-                        playDaSong(position,false);
+                        playDaSong(position, false);
                     }
                 }
                 imgNext.setClickable(false);
@@ -216,7 +270,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                         if (position > songs.size() - 1) {
                             position = 0;
                         }
-                        playDaSong(position,false);
+                        playDaSong(position, false);
                     }
                 }
                 imgNext.setClickable(false);
@@ -263,6 +317,14 @@ public class PlayMusicActivity extends AppCompatActivity {
                 ArrayList<Song> album = (ArrayList<Song>) intent.getExtras().getSerializable("album");
                 songs.addAll(album);
             }
+            if (intent.hasExtra("banner")) {
+                Song song = (Song) intent.getExtras().getSerializable("banner");
+                songs.add(song);
+            }
+        }
+
+        if (songs.size() > 0) {
+            addToRecentPlayedSongs(songs.get(0));
         }
     }
 
@@ -277,24 +339,36 @@ public class PlayMusicActivity extends AppCompatActivity {
         imgRandom = findViewById(R.id.imageBSuffle);
         imgRepeat = findViewById(R.id.imageBRepeat);
         viewPagerPlayM = findViewById(R.id.playMViewPager);
-        adapterMusic = new ViewPagerPlaylistAdapter(this,songs);
+        adapterMusic = new ViewPagerPlaylistAdapter(this, songs);
         viewPagerPlayM.setAdapter(adapterMusic);
         viewPagerPlayM.setUserInputEnabled(false);
         //This two belows is weir, consider vids 54,55
 
+        skSongPlayThrough.setProgressBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+
     }
-    private static int oTime =0, sTime =0, eTime =0, fTime = 5000, bTime = 5000;
+
+    private static int oTime = 0, sTime = 0, eTime = 0, fTime = 5000, bTime = 5000;
     private Handler hdlr = new Handler();
     private Runnable UpdateSongTime = new Runnable() {
         @Override
         public void run() {
-            sTime = mediaPlayer.getCurrentPosition();
-            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
-            txtSongTime.setText(sdf.format(sTime));
-            skSongPlayThrough.setProgress(sTime);
-            hdlr.postDelayed(this, 50);
+            if (mediaPlayer != null) {
+                sTime = mediaPlayer.getCurrentPosition();
+                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+                txtSongTime.setText(sdf.format(sTime));
+                skSongPlayThrough.setProgress(sTime);
+                hdlr.postDelayed(this, 50);
+            } else {
+                oTime = 0;
+                sTime = 0;
+                eTime = 0;
+                fTime = 5000;
+                bTime = 5000;
+            }
         }
     };
+
     class PlayMp3 extends AsyncTask<String, Void, String> {
 
         @Override
@@ -310,23 +384,23 @@ public class PlayMusicActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String song) {
             super.onPostExecute(song);
-                try {
-                    mediaPlayer.setDataSource(song);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
-                eTime = mediaPlayer.getDuration();
-                sTime = mediaPlayer.getCurrentPosition();
-                txtTotalSongTime.setText(sdf.format(eTime));
-                if(oTime == 0){
-                    skSongPlayThrough.setMax(eTime);
-                    oTime =1;
-                }
-                txtSongTime.setText(sdf.format(sTime));
-                skSongPlayThrough.setProgress(sTime);
+            try {
+                mediaPlayer.setDataSource(song);
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+            eTime = mediaPlayer.getDuration();
+            sTime = mediaPlayer.getCurrentPosition();
+            txtTotalSongTime.setText(sdf.format(eTime));
+            if (oTime == 0) {
+                skSongPlayThrough.setMax(eTime);
+                oTime = 1;
+            }
+            txtSongTime.setText(sdf.format(sTime));
+            skSongPlayThrough.setProgress(sTime);
         }
     }
 
@@ -335,11 +409,11 @@ public class PlayMusicActivity extends AppCompatActivity {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             Song daSong = songs.get(position);
-            //playASong.setCircleImageView(daSong.getImageURL());
+//            playASong.setCircleImageView(daSong.getImageURL());
             getSupportActionBar().setTitle(daSong.getSongName());
             new PlayMp3().execute(daSong.getMp3URL());
             imgPlay.setImageResource(R.drawable.iconpause);
-            if(!onChangePage){
+            if (!onChangePage) {
                 viewPagerPlayM.setCurrentItem(position);
             }
         }
@@ -349,6 +423,7 @@ public class PlayMusicActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mediaPlayer.stop();
+        mediaPlayer.reset();
         mediaPlayer.release();
         mediaPlayer = null;
     }

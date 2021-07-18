@@ -82,7 +82,7 @@ public class CategoryThemeFragment extends Fragment implements FirebaseReference
                             CardView cardView = new CardView(getActivity());
                             cardView.setRadius(10);
                             ImageView imageView = new ImageView(getActivity());
-                            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             if(themes.get(i).getImageTheme() != null){
                                 Picasso.get().load(themes.get(i).getImageTheme()).into(imageView);
                             }
