@@ -61,7 +61,7 @@ public class ListPlaylistFragment extends Fragment implements FirebaseReference 
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Intent intent = new Intent(getActivity(), PlaylistActivity.class);
-                        intent.putExtra("item_playlist", playlists.get(position));
+                        intent.putExtra("playlistId", playlists.get(position).getId());
                         startActivity(intent);
                     }
                 });

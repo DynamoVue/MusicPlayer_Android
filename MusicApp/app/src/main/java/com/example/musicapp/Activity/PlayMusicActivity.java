@@ -1,5 +1,6 @@
 package com.example.musicapp.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -31,14 +32,24 @@ import com.example.musicapp.Entity.Song;
 import com.example.musicapp.Fragment.PlayASongFragment;
 import com.example.musicapp.Fragment.PlayAlbumFragment;
 import com.example.musicapp.R;
+import com.example.musicapp.Service.FirebaseReference;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class PlayMusicActivity extends AppCompatActivity {
+public class PlayMusicActivity extends AppCompatActivity implements FirebaseReference {
     private ArrayList<Song> songs = new ArrayList<>();
     private ViewPagerPlaylistAdapter adapterMusic;
     private androidx.appcompat.widget.Toolbar playMToolBar;
@@ -49,11 +60,13 @@ public class PlayMusicActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private int position = 0;
     private boolean isRepeated = false, isRandom = false, next = false;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_music);
+        user = FirebaseAuth.getInstance().getCurrentUser();
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         getDataFromIntent();
@@ -64,7 +77,46 @@ public class PlayMusicActivity extends AppCompatActivity {
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         new PlayMp3().execute(songs.get(0).getMp3URL());
         hdlr.postDelayed(UpdateSongTime, 50);
-        imgPlay.setImageResource(R.drawable.iconpause);
+        imgPlay.setImageResource(R.drawable.iconpause); }
+
+    private void addToRecentPlayedSongs(Song song) {
+        if (user != null) {
+            DatabaseReference playlistRef = DATABASE_REFERENCE_USERS.child(user.getUid());
+
+            playlistRef.child("recentPlayed").addListenerForSingleValueEvent(new ValueEventListener() {
+                ArrayList<Song> recentPlayed = new ArrayList<>();
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        recentPlayed.add((Song) dataSnapshot.getValue(Song.class));
+                    }
+
+                    boolean alreadyContained = false;
+
+                    for (int i = 0; i < recentPlayed.size(); i++) {
+                        if (recentPlayed.get(i).getId().equals(song.getId())) {
+                            alreadyContained = true;
+                            break;
+                        }
+                    }
+
+                    if (!alreadyContained) {
+                        Map<String, Object> recentPlayedMapping = new HashMap<>();
+                        recentPlayed.add(song);
+                        for (int i = 0; i < recentPlayed.size(); i++) {
+                            recentPlayedMapping.put(i + "", recentPlayed.get(i));
+                        }
+
+                        playlistRef.child("recentPlayed").updateChildren(recentPlayedMapping);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
     }
 
     private void eventClick() {
@@ -269,6 +321,10 @@ public class PlayMusicActivity extends AppCompatActivity {
                 Song song = (Song) intent.getExtras().getSerializable("banner");
                 songs.add(song);
             }
+        }
+
+        if (songs.size() > 0) {
+            addToRecentPlayedSongs(songs.get(0));
         }
     }
 

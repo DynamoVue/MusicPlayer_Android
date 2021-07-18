@@ -108,7 +108,7 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
                 Picasso.get().load(song.getImageURL()).fit().centerCrop().into(playlistBanner);
                 songs=new ArrayList<Song>();
                 songs.add(song);
-                playlistAdapter = new PlaylistAdapter(songs, this, this);
+                playlistAdapter = new PlaylistAdapter(songs, this, this, playlistId);
                 playlistView.setLayoutManager(new LinearLayoutManager(this));
                 playlistView.setAdapter(playlistAdapter);
             }
@@ -128,8 +128,8 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
         Picasso.get().load(playlist.getPlaylistUrl()).fit().centerCrop().into(playlistBanner);
     }
 
-    private void renderSongsInRecyclerView(List<Song> songs) {
-        playlistAdapter = new PlaylistAdapter(songs, this, this);
+    private void renderSongsInRecyclerView(List<Song> songs, String playlistId) {
+        playlistAdapter = new PlaylistAdapter(songs, this, this, playlistId);
         playlistView.setLayoutManager(new LinearLayoutManager(this));
         playlistView.setAdapter(playlistAdapter);
     }
@@ -151,7 +151,7 @@ public class PlaylistActivity extends AppCompatActivity implements FirebaseRefer
                         }
                     }
 
-                    renderSongsInRecyclerView(songs);
+                    renderSongsInRecyclerView(songs, playlist.getId());
                 }
 
                 @Override
