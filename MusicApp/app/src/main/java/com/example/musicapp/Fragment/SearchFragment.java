@@ -29,21 +29,19 @@ import com.example.musicapp.R;
 
 import java.util.ArrayList;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements FirebaseReference {
     View view;
-    Toolbar toolbarSearchSong;
     RecyclerView recyclerViewSearchSong;
     TextView txtNoData;
     SearchSongAdapter adapter;
+    ArrayList<Song> songs = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_search, container, false);
-        toolbarSearchSong = view.findViewById(R.id.toolBarSearchSong);
         recyclerViewSearchSong = view.findViewById(R.id.recyclerVSearchSong);
         txtNoData = view.findViewById(R.id.tvNoDataSearchSong);
 //        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbarSearchSong);
-        toolbarSearchSong.setTitle("");
 
         setHasOptionsMenu(true);
         return view;
@@ -71,19 +69,19 @@ public class SearchFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private void searchSong(String keyword){
-        ArrayList<Song> songs = new ArrayList<>();
-        FirebaseReference.DATABASE_REFERENCE_MUSIC.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void searchSong(String keyword) {
+        songs.clear();
+        DATABASE_REFERENCE_MUSIC.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    String name = (String)dataSnapshot.child("songName").getValue();
+                    String name = (String) dataSnapshot.child("songName").getValue();
                     if (name.contains(keyword)) {
                         Song song = dataSnapshot.getValue(Song.class);
                         songs.add(song);
                     }
                 }
-
+                display();
             }
 
             @Override
@@ -91,13 +89,16 @@ public class SearchFragment extends Fragment {
 
             }
         });
-        if(songs.size() > 0){
+    }
+
+    void display() {
+        if (songs.size() > 0) {
             adapter = new SearchSongAdapter(getActivity(), songs);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             recyclerViewSearchSong.setLayoutManager(linearLayoutManager);
             recyclerViewSearchSong.setAdapter(adapter);
             txtNoData.setVisibility(view.GONE);
-        }else{
+        } else {
             recyclerViewSearchSong.setVisibility(View.GONE);
             txtNoData.setVisibility(view.VISIBLE);
         }
