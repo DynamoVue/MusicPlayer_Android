@@ -66,6 +66,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         hdlr.postDelayed(UpdateSongTime, 50);
         imgPlay.setImageResource(R.drawable.iconpause);
     }
+
     private void eventClick() {
         imgPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +77,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                     new PlayMp3().execute(songs.get(0).getMp3URL());
 //                    hdlr.postDelayed(UpdateSongTime, 50);
                     imgPlay.setImageResource(R.drawable.iconpause);
-                } else  if (mediaPlayer.isPlaying()) {
+                } else if (mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
                     imgPlay.setImageResource(R.drawable.iconplay);
                 } else {
@@ -135,7 +136,7 @@ public class PlayMusicActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
-                if(fromUser){
+                if (fromUser) {
                     mediaPlayer.seekTo(progress);
                     skSongPlayThrough.setProgress(progress);
                 }
@@ -172,7 +173,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                         if (position > songs.size() - 1) {
                             position = 0;
                         }
-                        playDaSong(position,false);
+                        playDaSong(position, false);
                     }
                 }
                 imgNext.setClickable(false);
@@ -217,7 +218,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                         if (position > songs.size() - 1) {
                             position = 0;
                         }
-                        playDaSong(position,false);
+                        playDaSong(position, false);
                     }
                 }
                 imgNext.setClickable(false);
@@ -264,7 +265,7 @@ public class PlayMusicActivity extends AppCompatActivity {
                 ArrayList<Song> album = (ArrayList<Song>) intent.getExtras().getSerializable("album");
                 songs.addAll(album);
             }
-            if (intent.hasExtra("banner")){
+            if (intent.hasExtra("banner")) {
                 Song song = (Song) intent.getExtras().getSerializable("banner");
                 songs.add(song);
             }
@@ -282,7 +283,7 @@ public class PlayMusicActivity extends AppCompatActivity {
         imgRandom = findViewById(R.id.imageBSuffle);
         imgRepeat = findViewById(R.id.imageBRepeat);
         viewPagerPlayM = findViewById(R.id.playMViewPager);
-        adapterMusic = new ViewPagerPlaylistAdapter(this,songs);
+        adapterMusic = new ViewPagerPlaylistAdapter(this, songs);
         viewPagerPlayM.setAdapter(adapterMusic);
         viewPagerPlayM.setUserInputEnabled(false);
         //This two belows is weir, consider vids 54,55
@@ -290,18 +291,28 @@ public class PlayMusicActivity extends AppCompatActivity {
         skSongPlayThrough.setProgressBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
 
     }
-    private static int oTime =0, sTime =0, eTime =0, fTime = 5000, bTime = 5000;
+
+    private static int oTime = 0, sTime = 0, eTime = 0, fTime = 5000, bTime = 5000;
     private Handler hdlr = new Handler();
     private Runnable UpdateSongTime = new Runnable() {
         @Override
         public void run() {
-            sTime = mediaPlayer.getCurrentPosition();
-            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
-            txtSongTime.setText(sdf.format(sTime));
-            skSongPlayThrough.setProgress(sTime);
-            hdlr.postDelayed(this, 50);
+            if (mediaPlayer != null) {
+                sTime = mediaPlayer.getCurrentPosition();
+                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+                txtSongTime.setText(sdf.format(sTime));
+                skSongPlayThrough.setProgress(sTime);
+                hdlr.postDelayed(this, 50);
+            } else {
+                oTime = 0;
+                sTime = 0;
+                eTime = 0;
+                fTime = 5000;
+                bTime = 5000;
+            }
         }
     };
+
     class PlayMp3 extends AsyncTask<String, Void, String> {
 
         @Override
@@ -317,23 +328,23 @@ public class PlayMusicActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String song) {
             super.onPostExecute(song);
-                try {
-                    mediaPlayer.setDataSource(song);
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
-                eTime = mediaPlayer.getDuration();
-                sTime = mediaPlayer.getCurrentPosition();
-                txtTotalSongTime.setText(sdf.format(eTime));
-                if(oTime == 0){
-                    skSongPlayThrough.setMax(eTime);
-                    oTime =1;
-                }
-                txtSongTime.setText(sdf.format(sTime));
-                skSongPlayThrough.setProgress(sTime);
+            try {
+                mediaPlayer.setDataSource(song);
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+            eTime = mediaPlayer.getDuration();
+            sTime = mediaPlayer.getCurrentPosition();
+            txtTotalSongTime.setText(sdf.format(eTime));
+            if (oTime == 0) {
+                skSongPlayThrough.setMax(eTime);
+                oTime = 1;
+            }
+            txtSongTime.setText(sdf.format(sTime));
+            skSongPlayThrough.setProgress(sTime);
         }
     }
 
@@ -346,7 +357,7 @@ public class PlayMusicActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(daSong.getSongName());
             new PlayMp3().execute(daSong.getMp3URL());
             imgPlay.setImageResource(R.drawable.iconpause);
-            if(!onChangePage){
+            if (!onChangePage) {
                 viewPagerPlayM.setCurrentItem(position);
             }
         }
@@ -356,6 +367,7 @@ public class PlayMusicActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mediaPlayer.stop();
+        mediaPlayer.reset();
         mediaPlayer.release();
         mediaPlayer = null;
     }
