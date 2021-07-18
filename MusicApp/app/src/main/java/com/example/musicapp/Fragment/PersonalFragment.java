@@ -27,6 +27,9 @@ import com.example.musicapp.Entity.Playlist;
 import com.example.musicapp.Entity.Song;
 import com.example.musicapp.R;
 import com.example.musicapp.Service.FirebaseReference;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,7 +44,9 @@ import org.imaginativeworld.whynotimagecarousel.listener.CarouselListener;
 import org.imaginativeworld.whynotimagecarousel.model.CarouselItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -54,6 +59,8 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
     private TextView userEmail, favMore;
     private ImageView userAvatar;
     private ImageView songAds;
+
+    private List<Song> songs = new ArrayList<Song>();
 
     private ImageCarousel recentPlayedCarousel, favSongsCarousel;
 
@@ -126,6 +133,13 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
             public void onClick(View v) {
                 if (user != null) {
                     Log.d("sign out", "Singing out");
+                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(getString(R.string.default_web_client_id))
+                            .requestEmail()
+                            .build();
+
+                    GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(PersonalFragment.this.getContext(), gso);
+                    mGoogleSignInClient.signOut();
                     FirebaseAuth.getInstance().signOut();
                     return;
                 }
@@ -145,13 +159,49 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int index = 0;
+
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Song temp = (Song) dataSnapshot.getValue(Song.class);
-                    list.add(new CarouselItem(temp.getImageURL(), temp.getSongName() + " - " + temp.getSingers()));
+
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("caption", temp.getSongName() + " - " + temp.getSingers());
+                    headers.put("songIndex", index + "");
+
+                    songs.add(temp);
+                    list.add(new CarouselItem(temp.getImageURL(), temp.getSongName() + " - " + temp.getSingers(), headers));
                 }
 
-                favSongsCarousel.registerLifecycle(getLifecycle());
-                favSongsCarousel.setData(list);
+                if (list.size() > 0) {
+                    favSongsCarousel.registerLifecycle(getLifecycle());
+                    favSongsCarousel.setData(list);
+                }
+
+                favSongsCarousel.setCarouselListener(new CarouselListener() {
+                    @Override
+                    public ViewBinding onCreateViewHolder(LayoutInflater layoutInflater, ViewGroup viewGroup) {
+                        return null;
+                    }
+
+                    @Override
+                    public void onBindViewHolder(ViewBinding viewBinding, CarouselItem carouselItem, int i) {
+
+                    }
+
+                    @Override
+                    public void onLongClick(int position, @NotNull CarouselItem dataObject) {
+                        // ...
+                    }
+
+                    @Override
+                    public void onClick(int position, @NotNull CarouselItem carouselItem) {
+                        String songIndex = carouselItem.getHeaders().get("songIndex");
+                        Intent myIntent = new Intent(PersonalFragment.this.getContext(), PlayMusicActivity.class);
+                        myIntent.putExtra("song", songs.get(Integer.parseInt(songIndex)));
+                        PersonalFragment.this.getContext().startActivity(myIntent);
+                        return;
+                    }
+                });
             }
 
             @Override
@@ -174,13 +224,20 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                             String playlistUrl = (String)dataSnapshotChildren.child("playlistUrl").getValue();
                             String id = (String)dataSnapshotChildren.child("id").getValue();
 
+                            Map<String, String> headers = new HashMap<>();
+                            headers.put("caption", playlistName);
+                            headers.put("id", id);
+
                             playlists.add(new Playlist(id, playlistName, playlistUrl, new ArrayList<>()));
-                            list.add(new CarouselItem(playlistUrl, playlistName));
+                            list.add(new CarouselItem(playlistUrl, playlistName, headers));
                         }
                 };
 
-                recentPlayedCarousel.registerLifecycle(getLifecycle());
-                recentPlayedCarousel.setData(list);
+                if (list.size() > 0)  {
+                    recentPlayedCarousel.registerLifecycle(getLifecycle());
+                    recentPlayedCarousel.setData(list);
+                }
+
                 recentPlayedCarousel.setCarouselListener(new CarouselListener() {
                     @Override
                     public ViewBinding onCreateViewHolder(LayoutInflater layoutInflater, ViewGroup viewGroup) {
@@ -199,7 +256,7 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
 
                     @Override
                     public void onClick(int position, @NotNull CarouselItem carouselItem) {
-                        String playlistId =carouselItem.getHeaders().get("id");
+                        String playlistId = carouselItem.getHeaders().get("id");
                         Intent myIntent = new Intent(PersonalFragment.this.getContext(), PlaylistActivity.class);
                         myIntent.putExtra("playlistId", playlistId);
                         PersonalFragment.this.getContext().startActivity(myIntent);
@@ -207,18 +264,20 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                     }
                 });
 
-                Picasso.get().load(playlists.get(_currentItem).getPlaylistUrl()).fit().centerCrop().into(songAds);
-
                 handler = new Handler();
                 runnable = new Runnable() {
                     @Override
                     public void run() {
+                        if (playlists.get(_currentItem).getPlaylistUrl() != "") {
+                            Picasso.get().load(playlists.get(_currentItem).getPlaylistUrl()).fit().centerCrop().into(songAds);
+                            return;
+                        }
+
                         _currentItem++;
+
                         if (_currentItem >= playlists.size()) {
                             _currentItem = 0;
                         }
-                        Picasso.get().load(playlists.get(_currentItem).getPlaylistUrl()).fit().centerCrop().into(songAds);
-                        ItemAnimation.animateFadeIn(songAds, 0);
                         handler.postDelayed(runnable, 4500);
                     }
                 };
