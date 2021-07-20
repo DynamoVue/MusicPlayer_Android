@@ -5,32 +5,37 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.musicapp.Adapter.ListAllThemeAdapter;
+import com.example.musicapp.Adapter.AllAlbumAdapter;
+import com.example.musicapp.Adapter.CategoryByThemeAdapter;
+import com.example.musicapp.Entity.Album;
+import com.example.musicapp.Entity.Categories;
 import com.example.musicapp.Entity.Theme;
 import com.example.musicapp.R;
 import com.example.musicapp.Service.FirebaseReference;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class ThemeScreenActivity extends AppCompatActivity implements FirebaseReference {
-    private RecyclerView recyclerViewAllTheme;
-    private Toolbar toolbarViewAllTheme;
-    private ImageView btnBack;
-    private ListAllThemeAdapter listAllThemeAdapter;
-    private ArrayList<Theme> themes;
+public class ListOfAlbum extends AppCompatActivity implements FirebaseReference{
+    RecyclerView recyclerViewAlbum;
+    Toolbar toolbarAlbum;
+    AllAlbumAdapter allAlbumAdapter;
+    ArrayList<Album> albums;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_theme_screen_activity);
+        setContentView(R.layout.activity_list_album);
         init();
         getData();
     }
@@ -42,11 +47,12 @@ public class ThemeScreenActivity extends AppCompatActivity implements FirebaseRe
     }
 
     private void init(){
-        recyclerViewAllTheme = findViewById(R.id.recyclerViewAllTheme);
-        toolbarViewAllTheme = findViewById(R.id.toolbarAllTheme);
+        recyclerViewAlbum = findViewById(R.id.recyclerViewAlbum);
+        toolbarAlbum = findViewById(R.id.toolbarAlbum);
+//        setSupportActionBar(toolbarAlbum);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Tất cả chủ đề");
-        toolbarViewAllTheme.setNavigationOnClickListener(new View.OnClickListener() {
+        getSupportActionBar().setTitle("Tất cả Album");
+        toolbarAlbum.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -54,27 +60,26 @@ public class ThemeScreenActivity extends AppCompatActivity implements FirebaseRe
         });
     }
 
-    private void getData() {
-        DATABASE_REFERENCE_THEME.addValueEventListener(new ValueEventListener() {
+    private void getData(){
+        DATABASE_REFERENCE_ALBUM.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                themes = new ArrayList<>();
+                albums = new ArrayList<>();
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Theme theme = dataSnapshot.getValue(Theme.class);
-                    theme.setIdTheme(dataSnapshot.getKey());
-                    themes.add(theme);
+                    Album album = dataSnapshot.getValue(Album.class);
+                    albums.add(album);
                 }
-                listAllThemeAdapter = new ListAllThemeAdapter(ThemeScreenActivity.this, themes);
-                recyclerViewAllTheme.setLayoutManager(new GridLayoutManager(ThemeScreenActivity.this, 1));
-                recyclerViewAllTheme.setAdapter(listAllThemeAdapter);
+                allAlbumAdapter = new AllAlbumAdapter(ListOfAlbum.this, albums);
+                recyclerViewAlbum.setLayoutManager(new GridLayoutManager(ListOfAlbum.this, 2));
+                recyclerViewAlbum.setAdapter(allAlbumAdapter);
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
 
             }
+
         });
 
     }
-
 }

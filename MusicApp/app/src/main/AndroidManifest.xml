@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicApp">
-        <activity android:name=".Activity.CategoryByThemeActivity"></activity>
+        <activity android:name=".Activity.ListOfAlbum"></activity>
+        <activity android:name=".Activity.CategoryByThemeActivity" />
         <activity android:name=".Activity.ThemeScreenActivity" />
         <activity android:name=".Activity.FavorSongsActivity" /> <!-- <activity android:name=".Activity.PlayMusicActivity"></activity> -->
         <provider

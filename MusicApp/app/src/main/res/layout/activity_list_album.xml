@@ -5,16 +5,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.ThemeScreenActivity">
-
+    tools:context=".Activity.ListAlbumActivity">
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbarAllTheme"
+        android:id="@+id/toolbarAlbum"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
-    </androidx.appcompat.widget.Toolbar>
 
+    </androidx.appcompat.widget.Toolbar>
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewAllTheme"
+        android:id="@+id/recyclerViewAlbum"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

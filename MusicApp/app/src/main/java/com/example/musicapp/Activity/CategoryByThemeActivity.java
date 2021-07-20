@@ -25,37 +25,32 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class CategoryByThemeActivity extends AppCompatActivity implements FirebaseReference {
+public class CategoryByThemeActivity extends AppCompatActivity implements FirebaseReference{
     private Theme theme;
-    private ImageView btnBack;
     RecyclerView recyclerViewTheLoaiTheoChuDe;
     Toolbar toolbarTheLoaiTheoChuDe;
     private ArrayList<Categories> categories;
     CategoryByThemeAdapter categoryByThemeAdapter;
-    String idTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_by_theme);
-        btnBack = (ImageView) findViewById(R.id.backButton);
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
         GetIntent();
         init();
         GetData();
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
 
     private void init(){
         recyclerViewTheLoaiTheoChuDe = findViewById(R.id.recyclerViewTheLoaiTheoChuDe);
         toolbarTheLoaiTheoChuDe = findViewById(R.id.toolbarTheLoaiTheoChuDe);
-//        setSupportActionBar(toolbarTheLoaiTheoChuDe);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(theme.getNameTheme());
         toolbarTheLoaiTheoChuDe.setNavigationOnClickListener(new View.OnClickListener() {
@@ -69,19 +64,38 @@ public class CategoryByThemeActivity extends AppCompatActivity implements Fireba
 
     private void GetData(){
 //        Query connectedPlaylist = DATABASE_REFERENCE_CATEGORY.child("idTheme");
-        DATABASE_REFERENCE_CATEGORY.addValueEventListener(new ValueEventListener() {
+        DATABASE_REFERENCE_THEME.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                categories = new ArrayList<>();
                 for(DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    Categories category = dataSnapshot.getValue(Categories.class);
-                    category.setIdTheme(dataSnapshot.getKey());
-                    categories.add(category);
+                    theme = dataSnapshot.getValue(Theme.class);
+                    theme.setIdTheme(dataSnapshot.child("idTheme").getKey());
                 }
+                String themeID = theme.getIdTheme();
 
-                categoryByThemeAdapter = new CategoryByThemeAdapter(CategoryByThemeActivity.this,categories);
-                recyclerViewTheLoaiTheoChuDe.setLayoutManager(new GridLayoutManager(CategoryByThemeActivity.this, 2) );
-                recyclerViewTheLoaiTheoChuDe.setAdapter(categoryByThemeAdapter);
+                DATABASE_REFERENCE_CATEGORY.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        categories = new ArrayList<>();
+                        for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                            Categories category = dataSnapshot.getValue(Categories.class);
+                            category.setIdTheme(dataSnapshot.child("idTheme").getKey());
+                            String categoryThemeID = category.getIdTheme();
+                            if(themeID.equals(categoryThemeID)) {
+                                categories.add(category);
+                            }
+                        }
+
+                        categoryByThemeAdapter = new CategoryByThemeAdapter(CategoryByThemeActivity.this,categories);
+                        recyclerViewTheLoaiTheoChuDe.setLayoutManager(new GridLayoutManager(CategoryByThemeActivity.this, 2) );
+                        recyclerViewTheLoaiTheoChuDe.setAdapter(categoryByThemeAdapter);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+
+                    }
+                });
             }
 
             @Override
@@ -89,6 +103,7 @@ public class CategoryByThemeActivity extends AppCompatActivity implements Fireba
 
             }
         });
+
     }
 
     private void GetIntent() {
