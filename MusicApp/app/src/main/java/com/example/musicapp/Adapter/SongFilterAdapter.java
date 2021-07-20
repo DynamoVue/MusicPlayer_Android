@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicapp.Activity.AuthenticationActivity;
+import com.example.musicapp.Activity.FavorSongsActivity;
 import com.example.musicapp.Activity.PlayMusicActivity;
 import com.example.musicapp.Activity.PlaylistActivity;
 import com.example.musicapp.Animation.ItemAnimation;
@@ -66,11 +67,12 @@ public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.My
     public List<Song> filteredSongs;
     public Context mContext;
     public Song songDisplayMore;
-    public PlaylistActivity fragment;
+    public FavorSongsActivity activity;
     FirebaseUser user;
 
-    public SongFilterAdapter(List<Song> songs, Context mContext) {
+    public SongFilterAdapter(List<Song> songs, Context mContext, FavorSongsActivity activity) {
         this.songs = songs;
+        this.activity = activity;
         this.filteredSongs = songs;
         this.mContext = mContext;
     }
@@ -123,7 +125,7 @@ public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.My
     }
 
     public void returnFromThread(Boolean result, ProgressDialog dialog) {
-        Toast.makeText(fragment, "Download Successful!", Toast.LENGTH_LONG).show();
+        Toast.makeText(activity, "Download Successful!", Toast.LENGTH_LONG).show();
         dialog.dismiss();
     }
 
@@ -136,7 +138,7 @@ public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.My
         request.setDestinationInExternalFilesDir(context, destinationDirectory, fileName + "." + fileExtension);
         final long downloadId = downloadManager.enqueue(request);
 
-        ProgressDialog dialog = new ProgressDialog(fragment);
+        ProgressDialog dialog = new ProgressDialog(activity);
         dialog.setMessage("Your file is start downloading!");
         dialog.setTitle("Download " + songDisplayMore.getSongName());
         dialog.setProgressStyle(dialog.STYLE_SPINNER);
@@ -166,8 +168,8 @@ public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.My
                     @Override
                     public void onClick(View v) {
                         if (user == null) {
-                            Intent myIntent = new Intent(fragment, AuthenticationActivity.class);
-                            fragment.startActivity(myIntent);
+                            Intent myIntent = new Intent(activity, AuthenticationActivity.class);
+                            activity.startActivity(myIntent);
                             return;
                         }
                         StorageReference httpsReference = storage.getReferenceFromUrl(songDisplayMore.getMp3URL());
@@ -182,7 +184,7 @@ public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.My
                         httpsReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                downloadFile(fragment, songDisplayMore.getSongName() + "", "mp3", Environment.DIRECTORY_DOWNLOADS, songDisplayMore.getMp3URL());
+                                downloadFile(activity, songDisplayMore.getSongName() + "", "mp3", Environment.DIRECTORY_DOWNLOADS, songDisplayMore.getMp3URL());
                                 bottomSheetDialog.dismiss();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -208,8 +210,8 @@ public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.My
                     @Override
                     public void onClick(View v) {
                         if (user == null) {
-                            Intent myIntent = new Intent(fragment, AuthenticationActivity.class);
-                            fragment.startActivity(myIntent);
+                            Intent myIntent = new Intent(activity, AuthenticationActivity.class);
+                            activity.startActivity(myIntent);
                             return;
                         }
                         bottomSheetDialog.dismiss();
@@ -235,9 +237,9 @@ public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.My
                                 ShareStoryContent content = new ShareStoryContent.Builder()
                                         .setBackgroundAsset(photo)
                                         .build();
-                                ShareDialog dialog = new ShareDialog(fragment);
+                                ShareDialog dialog = new ShareDialog(activity);
                                 if (dialog.canShow(ShareStoryContent.class)) {
-                                    dialog.show(fragment, content);
+                                    dialog.show(activity, content);
                                     nestedBottomSheetDialog.dismiss();
                                 }
                             }
@@ -246,12 +248,13 @@ public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.My
                         nestedBottomSheetView.findViewById(R.id.facebook).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                Log.d("here", "there");
                                 ShareLinkContent content = new ShareLinkContent.Builder()
                                         .setContentUrl(Uri.parse(songDisplayMore.getMp3URL()))
                                         .build();
-                                ShareDialog dialog = new ShareDialog(fragment);
+                                ShareDialog dialog = new ShareDialog(activity);
                                 if (dialog.canShow(ShareLinkContent.class)) {
-                                    dialog.show(fragment, content);
+                                    dialog.show(activity, content);
                                     nestedBottomSheetDialog.dismiss();
                                 }
                             }
@@ -275,8 +278,8 @@ public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.My
                     public void onClick(View v) {
                         user = FirebaseAuth.getInstance().getCurrentUser();
                         if (user == null) {
-                            Intent myIntent = new Intent(fragment, AuthenticationActivity.class);
-                            fragment.startActivity(myIntent);
+                            Intent myIntent = new Intent(activity, AuthenticationActivity.class);
+                            activity.startActivity(myIntent);
                             return;
                         }
 
