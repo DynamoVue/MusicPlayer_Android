@@ -61,6 +61,7 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
     private ImageView songAds;
 
     private List<Song> songs = new ArrayList<Song>();
+    private List<Song> recentPlayedSongs = new ArrayList<Song>();
 
     private ImageCarousel recentPlayedCarousel, favSongsCarousel;
 
@@ -81,6 +82,7 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
                     btnLogin.setText("Logout");
                     getFavoriteSongs();
                     getRecentPlayed();
+                    getHotestPlaylist();
                 }
 
                 if (user == null) {
@@ -154,7 +156,7 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
     private void getFavoriteSongs() {
         DatabaseReference playlistRef = DATABASE_REFERENCE_USERS.child(user.getUid());
 
-        playlistRef.child("favoriteSongs").limitToFirst(5).addListenerForSingleValueEvent(new ValueEventListener() {
+        playlistRef.child("favoriteSongs").limitToLast(5).addListenerForSingleValueEvent(new ValueEventListener() {
             List<CarouselItem> list = new ArrayList<>();
 
             @Override
@@ -170,6 +172,7 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
 
                     songs.add(temp);
                     list.add(new CarouselItem(temp.getImageURL(), temp.getSongName() + " - " + temp.getSingers(), headers));
+                    index++;
                 }
 
                 if (list.size() > 0) {
@@ -212,26 +215,27 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
     }
 
     private View getRecentPlayed() {
-        DATABASE_REFERENCE_PLAYLIST.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference playlistRef = DATABASE_REFERENCE_USERS.child(user.getUid());
+
+        playlistRef.child("recentPlayed").limitToLast(5).addListenerForSingleValueEvent(new ValueEventListener() {
+            ArrayList<Song> recentPlayed = new ArrayList<>();
+            List<CarouselItem> list = new ArrayList<>();
+
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                List<CarouselItem> list = new ArrayList<>();
-                List<Playlist> playlists = new ArrayList<>();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int index = 0;
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        for (DataSnapshot dataSnapshotChildren : snapshot.getChildren()) {
-                            String playlistName = (String)dataSnapshotChildren.child("playlistName").getValue();
-                            String playlistUrl = (String)dataSnapshotChildren.child("playlistUrl").getValue();
-                            String id = (String)dataSnapshotChildren.child("id").getValue();
+                    Song temp = (Song) dataSnapshot.getValue(Song.class);
 
-                            Map<String, String> headers = new HashMap<>();
-                            headers.put("caption", playlistName);
-                            headers.put("id", id);
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("caption", temp.getSongName() + " - " + temp.getSingers());
+                    headers.put("songIndex", index + "");
 
-                            playlists.add(new Playlist(id, playlistName, playlistUrl, new ArrayList<>()));
-                            list.add(new CarouselItem(playlistUrl, playlistName, headers));
-                        }
-                };
+                    recentPlayed.add(temp);
+                    list.add(new CarouselItem(temp.getImageURL(), temp.getSongName() + " - " + temp.getSingers(), headers));
+                    index++;
+                }
 
                 if (list.size() > 0)  {
                     recentPlayedCarousel.registerLifecycle(getLifecycle());
@@ -256,13 +260,43 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
 
                     @Override
                     public void onClick(int position, @NotNull CarouselItem carouselItem) {
-                        String playlistId = carouselItem.getHeaders().get("id");
-                        Intent myIntent = new Intent(PersonalFragment.this.getContext(), PlaylistActivity.class);
-                        myIntent.putExtra("playlistId", playlistId);
+                        recentPlayedSongs = recentPlayed;
+                        String songIndex = carouselItem.getHeaders().get("songIndex");
+                        Intent myIntent = new Intent(PersonalFragment.this.getContext(), PlayMusicActivity.class);
+                        myIntent.putExtra("song", recentPlayedSongs.get(Integer.parseInt(songIndex)));
                         PersonalFragment.this.getContext().startActivity(myIntent);
                         return;
                     }
                 });
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        init();
+        return view;
+    }
+
+    private void getHotestPlaylist() {
+        DATABASE_REFERENCE_PLAYLIST.limitToLast(5).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                List<Playlist> playlists = new ArrayList<>();
+
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    for (DataSnapshot dataSnapshotChildren : snapshot.getChildren()) {
+                        String playlistName = (String)dataSnapshotChildren.child("playlistName").getValue();
+                        String playlistUrl = (String)dataSnapshotChildren.child("playlistUrl").getValue();
+                        String id = (String)dataSnapshotChildren.child("id").getValue();
+
+                        playlists.add(new Playlist(id, playlistName, playlistUrl, new ArrayList<>()));
+                    }
+                };
+
 
                 handler = new Handler();
                 runnable = new Runnable() {
@@ -289,9 +323,6 @@ public class PersonalFragment extends Fragment implements FirebaseReference {
 
             }
         });
-
-        init();
-        return view;
     }
 
     @Override
