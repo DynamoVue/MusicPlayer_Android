@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,8 +53,9 @@ import java.util.concurrent.TimeUnit;
 public class PlayMusicActivity extends AppCompatActivity implements FirebaseReference {
     private ArrayList<Song> songs = new ArrayList<>();
     private ViewPagerPlaylistAdapter adapterMusic;
+    private ImageView btnBack;
     private androidx.appcompat.widget.Toolbar playMToolBar;
-    private TextView txtSongTime, txtTotalSongTime;
+    private TextView txtSongTime, txtTotalSongTime, songTitle;
     private SeekBar skSongPlayThrough;
     private ImageButton imgPlay, imgNext, imgPrev, imgRandom, imgRepeat;
     private ViewPager2 viewPagerPlayM;
@@ -75,6 +77,7 @@ public class PlayMusicActivity extends AppCompatActivity implements FirebaseRefe
 
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        songTitle.setText(songs.get(0).getSongName() + " - " + songs.get(0).getSingers());
         new PlayMp3().execute(songs.get(0).getMp3URL());
         hdlr.postDelayed(UpdateSongTime, 50);
         imgPlay.setImageResource(R.drawable.iconpause); }
@@ -285,7 +288,8 @@ public class PlayMusicActivity extends AppCompatActivity implements FirebaseRefe
                 }, 3000);
             }
         });
-        playMToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
@@ -293,15 +297,6 @@ public class PlayMusicActivity extends AppCompatActivity implements FirebaseRefe
                 songs.clear();
             }
         });
-        playMToolBar.setTitleTextColor(Color.WHITE);
-//        viewPagerPlayM.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-//            @Override
-//            public void onPageSelected(int positionPage) {
-//                super.onPageSelected(position);
-//                position = positionPage;
-//                playDaSong(positionPage, true);
-//            }
-//        });
     }
 
     private void getDataFromIntent() {
@@ -329,7 +324,9 @@ public class PlayMusicActivity extends AppCompatActivity implements FirebaseRefe
     }
 
     public void init() {
-        playMToolBar = findViewById(R.id.playMToolBar);
+//        playMToolBar = findViewById(R.id.playMToolBar);
+        btnBack = (ImageView) findViewById(R.id.backButton);
+        songTitle = findViewById(R.id.songTitle);
         txtSongTime = findViewById(R.id.songTime);
         txtTotalSongTime = findViewById(R.id.songTotalTime);
         skSongPlayThrough = findViewById(R.id.songPlayThrough);
@@ -410,6 +407,7 @@ public class PlayMusicActivity extends AppCompatActivity implements FirebaseRefe
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             Song daSong = songs.get(position);
 //            playASong.setCircleImageView(daSong.getImageURL());
+            songTitle.setText(daSong.getSongName() + " - " + daSong.getSingers());
             getSupportActionBar().setTitle(daSong.getSongName());
             new PlayMp3().execute(daSong.getMp3URL());
             imgPlay.setImageResource(R.drawable.iconpause);

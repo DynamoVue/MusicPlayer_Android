@@ -127,7 +127,7 @@ public class FavorSongsActivity extends AppCompatActivity implements FirebaseRef
     }
 
     private void renderSongsInRecyclerView(List<Song> songs) {
-        adapter = new SongFilterAdapter(songs, this);
+        adapter = new SongFilterAdapter(songs, this, FavorSongsActivity.this);
         filteredSongs.setLayoutManager(new LinearLayoutManager(this));
         filteredSongs.setAdapter(adapter);
 
