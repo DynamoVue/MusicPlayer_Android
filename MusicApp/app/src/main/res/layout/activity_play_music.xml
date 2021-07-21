@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Activity.PlayMusicActivity"
+    android:orientation="vertical"
+    android:weightSum="10"
+    android:background="@color/dark">
+
+    <!-- TODO: Update blank fragment layout -->
+<!--    <androidx.appcompat.widget.Toolbar-->
+<!--        android:id="@+id/playMToolBar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="100dp"-->
+<!--        app:titleTextColor="@color/white"-->
+<!--        />-->
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
+        app:layout_collapseMode="pin">
+        <ImageView
+            android:id="@+id/backButton"
+            app:tint="@color/white"
+            android:src="@drawable/ic_baseline_arrow_back_24"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            />
+    </androidx.appcompat.widget.Toolbar>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/playMViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="20dp"
+        android:layout_weight="8" />
+
+    <LinearLayout
+        android:layout_marginBottom="40dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textSize="18sp"
+            android:id="@+id/songTitle"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="This is my love"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="10">
+            <TextView
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:text="00:00"
+                android:gravity="center"
+                android:layout_weight="0.5"
+                android:id="@+id/songTime"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <SeekBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="9"
+                android:id="@+id/songPlayThrough"
+            />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/songTotalTime"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:text="3:47"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:layout_weight="0.5"
+                />
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            >
+            <ImageButton
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                android:layout_alignParentLeft="true"
+                android:id="@+id/imageBSuffle"
+                android:src="@drawable/iconsuffle"
+                android:scaleType="fitXY"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@null"
+                />
+            <ImageButton
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_toLeftOf="@+id/imageBPlay"
+                android:id="@+id/imageBPrev"
+                android:src="@drawable/iconpreview"
+                android:scaleType="fitXY"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@null"
+                />
+            <ImageButton
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/imageBPlay"
+                android:src="@drawable/iconplay"
+                android:scaleType="fitXY"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@null"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                />
+            <ImageButton
+                android:layout_toRightOf="@+id/imageBPlay"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/imageBNext"
+                android:src="@drawable/iconnext"
+                android:scaleType="fitXY"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@null"
+                />
+
+            <ImageButton
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:id="@+id/imageBRepeat"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginRight="15dp"
+                android:background="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/iconrepeat" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+
+</LinearLayout>
