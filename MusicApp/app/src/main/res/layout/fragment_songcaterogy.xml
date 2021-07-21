@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,6 +12,7 @@
         android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsingToolBar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -80,6 +82,7 @@
                 app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
                 app:layout_collapseMode="pin">
                 <ImageView
+                    android:id="@+id/backButton"
                     app:tint="@color/white"
                     android:src="@drawable/ic_baseline_arrow_back_24"
                     android:layout_width="20dp"
@@ -105,6 +108,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btnShuffle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:width="200dp"

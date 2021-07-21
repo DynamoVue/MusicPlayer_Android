@@ -36,7 +36,7 @@ public class BannerFragment extends Fragment implements FirebaseReference {
         View view = inflater.inflate(R.layout.fragment_banner, container, false);
         init(view);
 
-        DATABASE_REFERENCE_MUSIC.addListenerForSingleValueEvent(new ValueEventListener() {
+        DATABASE_REFERENCE_MUSIC.limitToLast(5).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 currentItem = 0;
@@ -54,7 +54,7 @@ public class BannerFragment extends Fragment implements FirebaseReference {
                     public void run() {
                         currentItem = viewPager.getCurrentItem();
                         currentItem++;
-                        if (currentItem >= viewPager.getAdapter().getCount()) {
+                        if (currentItem > viewPager.getAdapter().getCount()) {
                             currentItem = 0;
                         }
                         viewPager.setCurrentItem(currentItem, true);
