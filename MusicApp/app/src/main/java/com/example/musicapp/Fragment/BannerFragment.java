@@ -43,7 +43,9 @@ public class BannerFragment extends Fragment implements FirebaseReference {
                 List<Song> songList = new ArrayList<>();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Song song = dataSnapshot.getValue(Song.class);
-                    songList.add(song);
+                    if (song.getNumberOfLikes() > 4) {
+                        songList.add(song);
+                    }
                 }
                 bannerAdapter = new BannerAdapter(getActivity(), songList);
                 viewPager.setAdapter(bannerAdapter);
