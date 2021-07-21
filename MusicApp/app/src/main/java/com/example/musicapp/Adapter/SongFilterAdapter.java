@@ -298,16 +298,18 @@ public class SongFilterAdapter extends RecyclerView.Adapter<SongFilterAdapter.My
                                 for (int i = 0; i < favorSongs.size(); i++) {
                                     if (favorSongs.get(i).getId().equals(songDisplayMore.getId())) {
                                         alreadyContained = true;
-                                        favorSongs.remove(i);
+                                        favorSongs.remove((Song) favorSongs.get(i));
                                         break;
                                     }
                                 }
 
                                 if (alreadyContained) {
-                                    Map<String, List<Song>> users = new HashMap<>();
-                                    users.put("favoriteSongs", favorSongs);
+                                    Map<String, Object> favorSongsMapping = new HashMap<>();
+                                    for (int i = 0; i < favorSongs.size(); i++) {
+                                        favorSongsMapping.put(i + "", favorSongs.get(i));
+                                    }
 
-                                    playlistRef.setValue(users);
+                                    playlistRef.child("favoriteSongs").setValue(favorSongsMapping);
                                 }
 
                                 Toast.makeText(v.getContext(), "Remove " + songDisplayMore.getSongName() + " Successful!", Toast.LENGTH_LONG).show();
