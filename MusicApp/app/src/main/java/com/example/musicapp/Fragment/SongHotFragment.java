@@ -50,9 +50,6 @@ public class SongHotFragment extends Fragment implements FirebaseReference {
                 for(DataSnapshot ds: snapshot.getChildren()){
                     Song song = ds.getValue(Song.class);
                     songs.add(song);
-                    if(songs.size()>=5){
-                        break;
-                    }
                 }
                 Collections.sort(songs, new Comparator<Song>() {
                     @Override
@@ -65,7 +62,14 @@ public class SongHotFragment extends Fragment implements FirebaseReference {
 
                     }
                 });
-                hotSongAdapter = new HotSongAdapter(getActivity(), (ArrayList<Song>) songs);
+                ArrayList<Song> topFiveSong= new ArrayList<>();
+                for(Song song: songs){
+                    topFiveSong.add(song);
+                    if(topFiveSong.size()>=5){
+                        break;
+                    }
+                }
+                hotSongAdapter = new HotSongAdapter(getActivity(), topFiveSong);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                 linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 rvHotSong.setLayoutManager(linearLayoutManager);
